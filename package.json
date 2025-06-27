@@ -1,0 +1,93 @@
+{
+  "name": "testgenius-ai",
+  "version": "1.0.0",
+  "description": "AI-Driven E2E Testing Framework with WebdriverIO",
+  "main": "dist/bin/testgenius.js",
+  "bin": {
+    "testgenius": "./dist/bin/testgenius.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/bin/testgenius.js",
+    "test": "testgenius run test all",
+    "test:smoke": "testgenius run test --tag smoke",
+    "test:auth": "testgenius run test --tag authentication",
+    "test:single": "testgenius run test",
+    "test:record": "testgenius run test-recorder",
+    "test:report": "testgenius generate report",
+    "test:summary": "testgenius generate report --summary",
+    "test:open": "testgenius open report",
+    "test:cleanup": "testgenius cleanup results",
+    "test:internet": "node dist/tests/run-internet-tests.js",
+    "test:internet:list": "node dist/tests/run-internet-tests.js --list",
+    "test:internet:single": "node dist/tests/run-internet-tests.js --test",
+    "test:internet:tag": "node dist/tests/run-internet-tests.js --tag",
+    "allure:generate": "npx allure generate allure-results --clean --output allure-report",
+    "allure:open": "npx allure open allure-report",
+    "allure:serve": "npx allure serve allure-results",
+    "allure:clean": "rm -rf allure-results allure-report",
+    "setup:env": "./setup-env.sh",
+    "setup:internet": "./setup-internet-tests.sh",
+    "init": "testgenius init",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "e2e",
+    "testing",
+    "webdriverio",
+    "ai",
+    "automation",
+    "selenium",
+    "browser-testing",
+    "typescript"
+  ],
+  "author": "TestGenius Team",
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^11.1.0",
+    "dotenv": "^16.3.1",
+    "fs-extra": "^11.2.0",
+    "handlebars": "^4.7.8",
+    "inquirer": "^9.2.12",
+    "langchain": "^0.1.0",
+    "moment": "^2.29.4",
+    "openai": "^4.20.0",
+    "puppeteer": "^21.6.0",
+    "sharp": "^0.33.0",
+    "webdriverio": "^8.32.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/handlebars": "^4.1.0",
+    "@types/inquirer": "^9.0.7",
+    "@types/moment": "^2.13.0",
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "@wdio/allure-reporter": "^8.43.0",
+    "@wdio/cli": "^8.32.0",
+    "@wdio/local-runner": "^8.32.0",
+    "@wdio/mocha-framework": "^8.32.0",
+    "@wdio/spec-reporter": "^8.32.0",
+    "allure-commandline": "^2.34.1",
+    "allure-js-commons": "^3.3.0",
+    "eslint": "^8.54.0",
+    "mocha": "^10.2.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hiroksarker/testgenius-ai.git"
+  },
+  "homepage": "https://testgenius.ai",
+  "bugs": {
+    "url": "https://github.com/hiroksarker/testgenius-ai/issues"
+  }
+}
