@@ -44,7 +44,7 @@
     "browser-testing",
     "typescript"
   ],
-  "author": "TestGenius Team",
+  "author": "hiroksarker <hirok.sarker@gmail.com>",
   "license": "AGPL-3.0",
   "dependencies": {
     "chalk": "^5.3.0",
