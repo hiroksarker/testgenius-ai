@@ -444,10 +444,21 @@ This project is licensed under the AGPL-3.0 License - see the [LICENSE](LICENSE)
 
 ## 📞 Support
 
-- 📧 Email: support@testgenius.ai
-- 🐛 Issues: [GitHub Issues](https://github.com/hiroksarker/testgenius-ai/issues)
-- 📖 Documentation: [Wiki](https://github.com/hiroksarker/testgenius-ai/wiki)
+### Get Help
+
+- 📧 **Email Support**: hirok.sarker@gmail.com
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/hiroksarker/testgenius-ai/issues)
+- 📖 **Documentation**: [Wiki](https://github.com/hiroksarker/testgenius-ai/wiki)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/hiroksarker/testgenius-ai/discussions)
+
+### Quick Support
+
+For immediate help:
+1. Check the [Wiki](https://github.com/hiroksarker/testgenius-ai/wiki) for common solutions
+2. Search existing [Issues](https://github.com/hiroksarker/testgenius-ai/issues)
+3. Create a new issue with detailed information
+4. Email for urgent matters: hirok.sarker@gmail.com
 
 ---
 
-**Made with ❤️ by the TestGenius Team** 
+**Made with ❤️ by hiroksarker** 

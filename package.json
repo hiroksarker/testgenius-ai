@@ -89,5 +89,10 @@
   "homepage": "https://testgenius.ai",
   "bugs": {
     "url": "https://github.com/hiroksarker/testgenius-ai/issues"
+  },
+  "support": {
+    "email": "hirok.sarker@gmail.com",
+    "issues": "https://github.com/hiroksarker/testgenius-ai/issues",
+    "wiki": "https://github.com/hiroksarker/testgenius-ai/wiki"
   }
 }
