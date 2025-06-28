@@ -67,6 +67,12 @@ program
   .option('-b, --browser <browser>', 'Browser to use (chrome, firefox, safari)', 'chrome')
   .option('-h, --headless', 'Run in headless mode')
   .option('--testsDir <dir>', 'Directory to load tests from (default: tests/)')
+  .option('-f, --file <file>', 'Run tests from a single file')
+  .option('--files <files...>', 'Run tests from multiple files')
+  .option('--testIds <ids...>', 'Run specific test IDs')
+  .option('--exclude <files...>', 'Exclude specific files')
+  .option('--tag <tag>', 'Run tests with specific tag')
+  .option('--priority <priority>', 'Run tests with specific priority (High, Medium, Low)')
   .action(async (testId, options) => {
     try {
       console.log(chalk.blue('🚀 Starting TestGenius Test Runner...'));
@@ -75,6 +81,32 @@ program
       
       // Auto-setup if needed
       await runner.autoSetup();
+      
+      // Prepare run options
+      const runOptions: any = {
+        browser: options.browser,
+        headless: options.headless
+      };
+      
+      // Add file-based options
+      if (options.file) {
+        runOptions.file = options.file;
+      }
+      if (options.files) {
+        runOptions.files = options.files;
+      }
+      if (options.testIds) {
+        runOptions.testIds = options.testIds;
+      }
+      if (options.exclude) {
+        runOptions.excludeFiles = options.exclude;
+      }
+      if (options.tag) {
+        runOptions.tag = options.tag;
+      }
+      if (options.priority) {
+        runOptions.priority = options.priority;
+      }
       
       // If user provided a custom testsDir, update config
       if (options.testsDir) {
@@ -86,10 +118,7 @@ program
       }
       
       // Run tests
-      const result = await runner.run(testId, {
-        browser: options.browser,
-        headless: options.headless
-      });
+      const result = await runner.run(testId, runOptions);
       
       console.log(chalk.green('✅ Test execution completed!'));
       console.log(chalk.blue('📊 Check reports/ directory for detailed results'));
@@ -186,10 +215,17 @@ program
     console.log(chalk.yellow('  testgenius list     - List all available tests'));
     console.log(chalk.yellow('  testgenius report   - View test results'));
     console.log(chalk.gray('─'.repeat(50)));
-    console.log(chalk.white('Examples:'));
-    console.log(chalk.gray('  testgenius run chrome-test    - Run specific test'));
-    console.log(chalk.gray('  testgenius run --headless     - Run tests in headless mode'));
-    console.log(chalk.gray('  testgenius run --browser firefox - Run with Firefox'));
+    console.log(chalk.white('Run Command Examples:'));
+    console.log(chalk.gray('  testgenius run                    - Run all tests'));
+    console.log(chalk.gray('  testgenius run INTERNET-001       - Run specific test by ID'));
+    console.log(chalk.gray('  testgenius run -f tests/auth.js   - Run tests from single file'));
+    console.log(chalk.gray('  testgenius run --files tests/auth.js tests/ui.js - Run from multiple files'));
+    console.log(chalk.gray('  testgenius run --testIds INTERNET-001 INTERNET-002 - Run specific test IDs'));
+    console.log(chalk.gray('  testgenius run --tag smoke        - Run tests with "smoke" tag'));
+    console.log(chalk.gray('  testgenius run --priority High    - Run high priority tests'));
+    console.log(chalk.gray('  testgenius run --exclude auth.js  - Exclude specific files'));
+    console.log(chalk.gray('  testgenius run --headless         - Run tests in headless mode'));
+    console.log(chalk.gray('  testgenius run --browser firefox  - Run with Firefox'));
     console.log(chalk.gray('─'.repeat(50)));
     console.log(chalk.white('For more information:'));
     console.log(chalk.blue('  https://github.com/hiroksarker/testgenius-ai'));

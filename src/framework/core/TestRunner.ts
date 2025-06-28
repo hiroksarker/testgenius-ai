@@ -261,46 +261,106 @@ export class TestRunner {
     const testDirs = config.testsDir ? [config.testsDir] : ['tests', 'src/tests'];
     let tests: TestDefinition[] = [];
     
-    for (const testDir of testDirs) {
-      const fullPath = path.join(process.cwd(), testDir);
-      
-      if (await fs.pathExists(fullPath)) {
-        try {
-          const testFiles = await fs.readdir(fullPath);
-          
-          for (const file of testFiles) {
-            if (file.endsWith('.js') || file.endsWith('.ts')) {
-              try {
-                const testModule = require(path.join(fullPath, file));
-                const testDefinitions = testModule.default || testModule;
-                
-                if (Array.isArray(testDefinitions)) {
-                  tests = tests.concat(testDefinitions);
-                } else if (testDefinitions && typeof testDefinitions === 'object') {
-                  tests.push(testDefinitions);
-                }
-              } catch (error) {
-                this.logger.debug(`⚠️  Could not load test file ${file}:`, (error as Error).message);
+    // Handle file-based execution
+    if (options.file) {
+      // Single file execution
+      const filePath = path.resolve(options.file);
+      tests = await this.loadTestsFromFile(filePath);
+      this.logger.info(`📁 Loading tests from single file: ${options.file}`);
+    } else if (options.files && options.files.length > 0) {
+      // Multiple files execution
+      for (const file of options.files) {
+        const filePath = path.resolve(file);
+        const fileTests = await this.loadTestsFromFile(filePath);
+        tests = tests.concat(fileTests);
+      }
+      this.logger.info(`📁 Loading tests from ${options.files.length} file(s): ${options.files.join(', ')}`);
+    } else {
+      // Directory-based execution (existing logic)
+      for (const testDir of testDirs) {
+        const fullPath = path.join(process.cwd(), testDir);
+        
+        if (await fs.pathExists(fullPath)) {
+          try {
+            const testFiles = await fs.readdir(fullPath);
+            
+            for (const file of testFiles) {
+              // Skip excluded files
+              if (options.excludeFiles && options.excludeFiles.some(excludeFile => 
+                file.includes(excludeFile) || file === excludeFile
+              )) {
+                this.logger.debug(`⏭️  Skipping excluded file: ${file}`);
+                continue;
+              }
+              
+              if (file.endsWith('.js') || file.endsWith('.ts')) {
+                const filePath = path.join(fullPath, file);
+                const fileTests = await this.loadTestsFromFile(filePath);
+                tests = tests.concat(fileTests);
               }
             }
+            
+            if (tests.length > 0) {
+              this.logger.info(`📁 Found tests in ${testDir}/ directory`);
+              break;
+            }
+          } catch (error) {
+            this.logger.debug(`⚠️  Could not read ${testDir}/ directory:`, (error as Error).message);
           }
-          
-          if (tests.length > 0) {
-            this.logger.info(`📁 Found tests in ${testDir}/ directory`);
-            break;
-          }
-        } catch (error) {
-          this.logger.debug(`⚠️  Could not read ${testDir}/ directory:`, (error as Error).message);
         }
       }
     }
     
-    // Filter by testId if provided
-    if (testId && testId !== '*') {
+    // Filter by testId if provided (single test execution)
+    if (testId && testId !== '*' && testId !== 'all') {
       tests = tests.filter(test => test.id === testId || test.name === testId);
     }
     
+    // Filter by specific test IDs if provided
+    if (options.testIds && options.testIds.length > 0) {
+      tests = tests.filter(test => options.testIds!.includes(test.id));
+      this.logger.info(`🎯 Filtering to specific test IDs: ${options.testIds.join(', ')}`);
+    }
+    
+    // Filter by tag if provided
+    if (options.tag) {
+      tests = tests.filter(test => test.tags && test.tags.includes(options.tag!));
+      this.logger.info(`🏷️  Filtering by tag: ${options.tag}`);
+    }
+    
+    // Filter by priority if provided
+    if (options.priority) {
+      tests = tests.filter(test => test.priority === options.priority);
+      this.logger.info(`⚡ Filtering by priority: ${options.priority}`);
+    }
+    
     return tests;
+  }
+
+  private async loadTestsFromFile(filePath: string): Promise<TestDefinition[]> {
+    try {
+      if (!(await fs.pathExists(filePath))) {
+        this.logger.warn(`⚠️  File not found: ${filePath}`);
+        return [];
+      }
+      
+      const testModule = require(filePath);
+      const testDefinitions = testModule.default || testModule;
+      
+      if (Array.isArray(testDefinitions)) {
+        this.logger.debug(`✅ Loaded ${testDefinitions.length} tests from ${filePath}`);
+        return testDefinitions;
+      } else if (testDefinitions && typeof testDefinitions === 'object') {
+        this.logger.debug(`✅ Loaded 1 test from ${filePath}`);
+        return [testDefinitions];
+      } else {
+        this.logger.warn(`⚠️  No valid test definitions found in ${filePath}`);
+        return [];
+      }
+    } catch (error) {
+      this.logger.warn(`⚠️  Could not load test file ${filePath}:`, (error as Error).message);
+      return [];
+    }
   }
 
   private async runSingleTest(

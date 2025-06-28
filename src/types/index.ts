@@ -154,6 +154,10 @@ export interface TestRunOptions {
   model?: string;
   parallel?: number;
   env?: string;
+  file?: string;
+  files?: string[];
+  testIds?: string[];
+  excludeFiles?: string[];
 }
 
 export interface ReportOptions {

@@ -131,6 +131,74 @@ Follow the prompts and TestGenius will create your test automatically!
 
 ---
 
+## 🎯 Advanced Run Options
+
+### 📁 **File-Based Execution**
+Run tests from specific files or multiple files:
+
+```bash
+# Run tests from a single file
+testgenius run -f tests/auth-tests.js
+
+# Run tests from multiple files
+testgenius run --files tests/auth-tests.js tests/ui-tests.js
+
+# Exclude specific files
+testgenius run --exclude auth-tests.js
+```
+
+### 🎯 **Test ID Filtering**
+Run specific tests by their IDs:
+
+```bash
+# Run a single test by ID
+testgenius run LOGIN-001
+
+# Run multiple specific tests
+testgenius run --testIds LOGIN-001 LOGIN-002 AUTH-001
+```
+
+### 🏷️ **Tag and Priority Filtering**
+Filter tests by tags or priority levels:
+
+```bash
+# Run tests with specific tag
+testgenius run --tag smoke
+
+# Run high priority tests only
+testgenius run --priority High
+
+# Run medium priority tests with specific tag
+testgenius run --priority Medium --tag regression
+```
+
+### 🌐 **Browser and Mode Options**
+Customize browser and execution mode:
+
+```bash
+# Run in headless mode
+testgenius run --headless
+
+# Use specific browser
+testgenius run --browser firefox
+
+# Combine options
+testgenius run --headless --browser chrome --tag smoke
+```
+
+### 📂 **Custom Test Directory**
+Load tests from a custom directory:
+
+```bash
+# Use custom tests directory
+testgenius run --testsDir src/tests
+
+# Combine with file filtering
+testgenius run --testsDir src/tests -f src/tests/auth.js
+```
+
+---
+
 ## 🎨 Test Examples
 
 ### 🔐 **Authentication Tests**
