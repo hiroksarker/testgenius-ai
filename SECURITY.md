@@ -156,9 +156,9 @@ We follow responsible disclosure practices:
 
 ### Primary Contacts
 
-- **Security Lead**: security@testgenius.ai
-- **Technical Lead**: tech@testgenius.ai
-- **Project Maintainer**: maintainer@testgenius.ai
+- **Security Lead**: hirok.sarker@gmail.com
+- **Technical Lead**: hirok.sarker@gmail.com
+- **Project Maintainer**: hirok.sarker@gmail.com
 
 ### Response Team
 

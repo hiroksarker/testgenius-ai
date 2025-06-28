@@ -342,7 +342,7 @@ npm start run test all
 
 - **Bug Reports**: [Create an issue](https://github.com/hiroksarker/testgenius-ai/issues)
 - **Feature Requests**: [Start a discussion](https://github.com/hiroksarker/testgenius-ai/discussions)
-- **Security Issues**: Email [security@testgenius.ai](mailto:security@testgenius.ai)
+- **Security Issues**: Email [hirok.sarker@gmail.com](mailto:hirok.sarker@gmail.com)
 
 ## 📄 License
 
