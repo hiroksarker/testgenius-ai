@@ -6,9 +6,8 @@
 ![Version](https://img.shields.io/npm/v/testgenius-ai?style=for-the-badge)
 ![Downloads](https://img.shields.io/npm/dm/testgenius-ai?style=for-the-badge)
 ![License](https://img.shields.io/npm/l/testgenius-ai?style=for-the-badge)
-![Powered by WebdriverIO](https://img.shields.io/badge/Powered%20by-WebdriverIO-green?style=for-the-badge&logo=webdriverio)
 
-**🚀 The Ultimate E2E Testing Framework for QA Engineers**
+**🚀 The Ultimate E2E Testing Framework**
 
 *No coding required • AI-powered automation • Beautiful reports • Zero complexity*
 
@@ -454,19 +453,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <div align="center">
 
-**Built with the power of [WebdriverIO](https://webdriver.io/) - Next-gen browser and mobile automation test framework**
-
-[![WebdriverIO](https://img.shields.io/badge/WebdriverIO-v9-green?style=for-the-badge&logo=webdriverio)](https://webdriver.io/)
-
-*TestGenius AI leverages WebdriverIO's powerful automation capabilities to provide a simple, AI-powered testing experience for everyone.*
-
-</div>
-
----
-
-<div align="center">
-
-**Made with ❤️ for QA Engineers Worldwide**
+**Developed by [Hirok Sarker](https://github.com/hiroksarker) with ❤️ for QA Engineers Worldwide**
 
 [![GitHub stars](https://img.shields.io/github/stars/hiroksarker/testgenius-ai?style=social)](https://github.com/hiroksarker/testgenius-ai)
 [![GitHub forks](https://img.shields.io/github/forks/hiroksarker/testgenius-ai?style=social)](https://github.com/hiroksarker/testgenius-ai)
