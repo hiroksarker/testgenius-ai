@@ -1,5 +1,7 @@
 # 🤖 TestGenius AI - Intelligent E2E Testing Framework
 
+> **🚨 MUST READ: TestGenius AI requires an OpenAI API key. AI-powered execution is not optional—it's the core of the framework. For learning, research, or professional use, understanding and enabling AI integration is a must!**
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![WebdriverIO](https://img.shields.io/badge/WebdriverIO-4.0.0+-green.svg)](https://webdriver.io/)
@@ -48,7 +50,8 @@ npm run setup:env
 
 ## ✨ Key Features
 
-- 🤖 **AI-Powered Execution**: Intelligent test execution with smart waits and verifications
+- 🤖 **AI-Powered Execution (MANDATORY)**: All test execution is driven by AI (OpenAI GPT-4o or compatible). You **must** provide an OpenAI API key—this is not optional!
+- 📚 **AI Integration is Essential**: For your own learning, research, or professional automation, understanding and enabling AI integration is required. The framework will not function without it.
 - 📹 **Interactive Recording**: Step-by-step test recording with continuous mode
 - 🌐 **Multi-Browser Support**: Chrome, Firefox, Safari, Edge automation
 - 📊 **Professional Reporting**: Allure-based comprehensive test reports
@@ -64,20 +67,23 @@ npm run setup:env
 - **Node.js**: 18.0.0 or higher
 - **npm**: 9.0.0 or higher
 - **Chrome/Firefox**: For browser automation
+- **OpenAI API Key (MANDATORY)**: You must have an OpenAI API key. Get one from https://platform.openai.com/api-keys
 
 ### First Test
 
 ```bash
-# Record a test
+# Record a test (requires OpenAI API key)
 testgenius record
 
-# Run all tests
+# Run all tests (requires OpenAI API key)
 testgenius run test all
 
 # Generate and view reports
 testgenius allure:generate
 testgenius allure:open
 ```
+
+> **Note:** TestGenius AI will not work without a valid OpenAI API key. All core features depend on AI-powered execution.
 
 ## 📖 Documentation
 
@@ -243,119 +249,3 @@ module.exports = {
   }]]
 };
 ```
-
-## 📊 Available Commands
-
-### Test Management
-
-```bash
-# Record a new test
-testgenius record
-
-# List all tests
-testgenius list
-
-# Run all tests
-testgenius run test all
-
-# Run specific test
-testgenius run test TEST_ID
-
-# Run tests in headed mode
-testgenius run test all --no-headless
-```
-
-### Development
-
-```bash
-# Build project
-npm run build
-
-# Watch for changes
-npm run watch
-
-# Lint code
-npm run lint
-
-# Run unit tests
-npm test
-```
-
-### Reporting
-
-```bash
-# Generate Allure report
-testgenius allure:generate
-
-# Open Allure report
-testgenius allure:open
-
-# Clean reports
-testgenius allure:clean
-```
-
-## 🤝 Contributing
-
-We welcome contributions from the community! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
-
-### Quick Contribution
-
-1. **Fork** the repository
-2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
-3. **Commit** your changes (`git commit -m 'feat: add amazing feature'`)
-4. **Push** to the branch (`git push origin feature/amazing-feature`)
-5. **Open** a Pull Request
-
-### Development Setup
-
-```bash
-# Fork and clone
-git clone https://github.com/hiroksarker/testgenius-ai.git
-cd testgenius-ai
-
-# Install dependencies
-npm install
-
-# Build project
-npm run build
-
-# Run tests
-npm start run test all
-```
-
-## 🐛 Bug Reports & Feature Requests
-
-- **Bug Reports**: [Create an issue](https://github.com/hiroksarker/testgenius-ai/issues)
-- **Feature Requests**: [Start a discussion](https://github.com/hiroksarker/testgenius-ai/discussions)
-- **Security Issues**: Email [security@testgenius.ai](mailto:security@testgenius.ai)
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **WebdriverIO Team** - For the excellent browser automation framework
-- **Allure Team** - For the comprehensive reporting solution
-- **Open Source Community** - For inspiration and contributions
-
-## 📞 Support
-
-- **Documentation**: [Wiki](WIKI_HOME.md)
-- **Issues**: [GitHub Issues](https://github.com/hiroksarker/testgenius-ai/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/hiroksarker/testgenius-ai/discussions)
-- **Email**: [support@testgenius.ai](mailto:support@testgenius.ai)
-
-## 🌟 Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=hiroksarker/testgenius-ai&type=Date)](https://star-history.com/#hiroksarker/testgenius-ai&Date)
-
----
-
-**Made with ❤️ by Hirok Sarker**
-
-[![GitHub contributors](https://img.shields.io/github/contributors/hiroksarker/testgenius-ai)](https://github.com/hiroksarker/testgenius-ai/graphs/contributors)
-[![GitHub stars](https://img.shields.io/github/stars/hiroksarker/testgenius-ai)](https://github.com/hiroksarker/testgenius-ai/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/hiroksarker/testgenius-ai)](https://github.com/hiroksarker/testgenius-ai/network)
-[![GitHub issues](https://img.shields.io/github/issues/hiroksarker/testgenius-ai)](https://github.com/hiroksarker/testgenius-ai/issues)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/hiroksarker/testgenius-ai)](https://github.com/hiroksarker/testgenius-ai/pulls) 
