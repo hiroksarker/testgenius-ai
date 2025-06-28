@@ -52,21 +52,45 @@ export class AITestExecutor {
       // Navigate to the site
       await this.navigateToSite(test.site);
       
-      // Analyze the task and create execution plan
-      const plan = await this.createExecutionPlan(test, options);
+      // Check if we have recorded steps from the TestRecorder
+      const recordedSteps = (test.testData as any)?.steps;
       
-      // Execute the plan
-      const result = await this.executePlan(plan, test, options);
-      
-      return {
-        success: result.success,
-        steps: this.steps,
-        screenshots: this.screenshots,
-        errors: result.errors || []
-      };
+      if (recordedSteps && Array.isArray(recordedSteps) && recordedSteps.length > 0) {
+        console.log(chalk.blue('📝 Executing recorded steps...\n'));
+        // Execute recorded steps directly
+        const result = await this.executeRecordedSteps(recordedSteps);
+        return {
+          success: result.success,
+          steps: this.steps,
+          screenshots: this.screenshots,
+          errors: result.errors || []
+        };
+      } else {
+        // Use AI plan if no recorded steps
+        console.log(chalk.blue('🧠 Creating AI execution plan...'));
+        const plan = await this.createExecutionPlan(test, options);
+        const result = await this.executePlan(plan, test, options);
+        
+        return {
+          success: result.success,
+          steps: this.steps,
+          screenshots: this.screenshots,
+          errors: result.errors || []
+        };
+      }
 
     } catch (error) {
       console.error(chalk.red('❌ AI execution failed:'), (error as Error).message);
+      
+      // 🔥 AUTOMATIC SCREENSHOT ON FAILURE 🔥
+      try {
+        const failureScreenshotPath = await this.takeScreenshot('ai-execution-failure');
+        this.screenshots.push(failureScreenshotPath);
+        console.log(chalk.yellow(`📸 Screenshot taken on AI execution failure: ${failureScreenshotPath}`));
+      } catch (screenshotError) {
+        console.error(chalk.red('❌ Failed to take failure screenshot:'), (screenshotError as Error).message);
+      }
+      
       return {
         success: false,
         steps: this.steps,
@@ -265,6 +289,16 @@ Example format:
         console.log(chalk.green(`  ✅ ${step.description}`));
       } catch (error) {
         console.error(chalk.red(`  ❌ ${step.description}:`), (error as Error).message);
+        
+        // 🔥 AUTOMATIC SCREENSHOT ON FAILURE 🔥
+        try {
+          const failureScreenshotPath = await this.takeScreenshot(`ai-plan-failure-${step.action}`);
+          this.screenshots.push(failureScreenshotPath);
+          console.log(chalk.yellow(`  📸 Screenshot taken on AI plan failure: ${failureScreenshotPath}`));
+        } catch (screenshotError) {
+          console.error(chalk.red(`  ❌ Failed to take failure screenshot:`), (screenshotError as Error).message);
+        }
+        
         this.addStep(step.description, (error as Error).message, 'failed');
         errors.push(`${step.description}: ${(error as Error).message}`);
         success = false;
@@ -297,6 +331,10 @@ Example format:
       case 'take_screenshot':
         await this.takeScreenshot(step.value?.toString() || 'step-screenshot');
         break;
+      case 'wait-time':
+        const waitTime = parseInt(String(step.value || step.selector || '1000')) * 1000;
+        await this.browser.pause(waitTime);
+        break;
       default:
         throw new Error(`Unknown action: ${step.action}`);
     }
@@ -322,5 +360,502 @@ Example format:
       status,
       timestamp: new Date()
     });
+  }
+
+  private async executeRecordedSteps(recordedSteps: any[]): Promise<{ success: boolean; errors: string[] }> {
+    console.log(chalk.blue('⚡ Executing recorded steps...\n'));
+    
+    const errors: string[] = [];
+    let success = true;
+
+    for (let i = 0; i < recordedSteps.length; i++) {
+      const step = recordedSteps[i];
+      const stepNumber = i + 1;
+      
+      try {
+        console.log(chalk.cyan(`  🔄 Step ${stepNumber}/${recordedSteps.length}: ${step.description}`));
+        console.log(chalk.gray(`     Action: ${step.action} | Target: ${step.target}${step.value ? ` | Value: ${step.value}` : ''}`));
+        
+        await this.executeRecordedStep(step);
+        
+        // Add a small pause between steps for better reliability
+        if (i < recordedSteps.length - 1) {
+          await this.browser!.pause(500);
+        }
+        
+        this.addStep(step.description, 'Step executed successfully', 'success');
+        console.log(chalk.green(`  ✅ Step ${stepNumber}/${recordedSteps.length}: ${step.description}`));
+        
+      } catch (error) {
+        console.error(chalk.red(`  ❌ Step ${stepNumber}/${recordedSteps.length}: ${step.description}:`), (error as Error).message);
+        
+        // 🔥 AUTOMATIC SCREENSHOT ON FAILURE 🔥
+        try {
+          const failureScreenshotPath = await this.takeScreenshot(`failure-step-${stepNumber}-${step.action}`);
+          this.screenshots.push(failureScreenshotPath);
+          console.log(chalk.yellow(`  📸 Screenshot taken on failure: ${failureScreenshotPath}`));
+        } catch (screenshotError) {
+          console.error(chalk.red(`  ❌ Failed to take failure screenshot:`), (screenshotError as Error).message);
+        }
+        
+        this.addStep(step.description, (error as Error).message, 'failed');
+        errors.push(`Step ${stepNumber}: ${step.description}: ${(error as Error).message}`);
+        success = false;
+        
+        // Continue with next step instead of stopping
+        console.log(chalk.yellow(`  ⚠️  Continuing with next step...`));
+      }
+    }
+
+    return { success, errors };
+  }
+
+  private async executeRecordedStep(step: any): Promise<void> {
+    if (!this.browser) throw new Error('Browser not initialized');
+
+    switch (step.action) {
+      case 'navigate':
+        await this.browser.url(step.target);
+        await this.browser.pause(2000); // Wait for page load
+        break;
+
+      case 'click':
+        console.log(chalk.yellow(`     🔍 Looking for button: "${step.target}"`));
+        
+        // Try to find element by various selectors
+        const clickElement = await this.findButton(step.target);
+        
+        // Check if element is clickable
+        const isClickable = await clickElement.isClickable();
+        if (!isClickable) {
+          console.log(chalk.yellow(`     ⚠️  Element found but not clickable, trying to scroll into view...`));
+          await clickElement.scrollIntoView();
+          await this.browser!.pause(500);
+        }
+        
+        console.log(chalk.green(`     ✅ Clicking button: "${step.target}"`));
+        await clickElement.click();
+        
+        // Special handling for login button - wait for page navigation
+        if (step.target.toLowerCase().includes('login') || step.target.toLowerCase().includes('submit') || step.target.toLowerCase().includes('enter')) {
+          console.log(chalk.yellow(`     ⏳ Waiting for page navigation after login...`));
+          await this.browser!.pause(3000); // Wait longer for login redirect
+          
+          // Wait for page to load completely
+          await this.browser!.waitUntil(async () => {
+            const readyState = await this.browser!.execute(() => document.readyState);
+            return readyState === 'complete';
+          }, {
+            timeout: 10000,
+            timeoutMsg: 'Page did not load completely after login'
+          });
+          
+          console.log(chalk.green(`     ✅ Page loaded successfully after login`));
+        } else {
+          await this.browser.pause(1000); // Normal wait after click
+        }
+        break;
+
+      case 'fill':
+        const fillElement = await this.findFormField(step.target, step.value);
+        await fillElement.clearValue();
+        await fillElement.setValue(step.value);
+        await this.browser.pause(500); // Wait after fill
+        break;
+
+      case 'type':
+        const typeElement = await this.findFormField(step.target, step.value);
+        await typeElement.clearValue();
+        await typeElement.setValue(step.value);
+        await this.browser.pause(500); // Wait after type
+        break;
+
+      case 'clear_field':
+        // BDD: Clear field for Background steps
+        const clearElement = await this.findFormField(step.target, '');
+        await clearElement.clearValue();
+        console.log(chalk.green(`     ✅ Cleared field: "${step.target}"`));
+        break;
+
+      case 'verify_field_error':
+        // BDD: Verify field has error state
+        console.log(chalk.yellow(`     🔍 Checking for error in field: "${step.target}"`));
+        const errorElement = await this.findFormField(step.target, '');
+        
+        // Check for error classes, attributes, or error messages
+        const hasError = await this.checkFieldError(errorElement);
+        if (hasError) {
+          console.log(chalk.green(`     ✅ Field "${step.target}" has error state`));
+        } else {
+          throw new Error(`Field "${step.target}" does not have error state`);
+        }
+        break;
+
+      case 'verify_text_not_present':
+        // BDD: Negative verification - text should NOT be present
+        console.log(chalk.yellow(`     🔍 Verifying text is NOT present: "${step.value}"`));
+        
+        // Wait a bit for page to stabilize
+        await this.browser!.pause(1000);
+        
+        // Check if text exists anywhere on the page
+        const pageText = await this.browser.getPageSource();
+        const pageTextLower = pageText.toLowerCase();
+        const searchTextLower = String(step.value).toLowerCase();
+        
+        if (pageTextLower.includes(searchTextLower)) {
+          // Text is present, which is not what we want
+          const visibleText = await this.browser!.$('body').getText();
+          console.log(chalk.red(`     ❌ Text "${step.value}" is present on page. Available text: ${visibleText.substring(0, 200)}...`));
+          throw new Error(`Text "${step.value}" should not be present on page`);
+        } else {
+          console.log(chalk.green(`     ✅ Text "${step.value}" is correctly NOT present on page`));
+        }
+        break;
+
+      case 'wait':
+        // Wait for element to appear or text to appear
+        if (!this.browser) throw new Error('Browser not initialized');
+        
+        await this.browser!.waitUntil(async () => {
+          try {
+            // First try to find the element
+            await this.findElement(step.target);
+            return true;
+          } catch {
+            // If element not found, check if text appears anywhere on page
+            const pageText = await this.browser!.getPageSource();
+            if (pageText.includes(step.target)) {
+              return true;
+            }
+            return false;
+          }
+        }, {
+          timeout: 10000,
+          timeoutMsg: `Element or text not found: ${step.target}`
+        });
+        break;
+
+      case 'verify':
+        if (step.value) {
+          console.log(chalk.yellow(`     🔍 Verifying text: "${step.value}"`));
+          
+          // Wait a bit for page to stabilize
+          await this.browser!.pause(1000);
+          
+          // Check if text exists anywhere on the page
+          const pageText = await this.browser.getPageSource();
+          const pageTextLower = pageText.toLowerCase();
+          const searchTextLower = String(step.value).toLowerCase();
+          
+          if (pageTextLower.includes(searchTextLower)) {
+            console.log(chalk.green(`     ✅ Text "${step.value}" found on page`));
+          } else {
+            // Try to find element and check its text
+            try {
+              const verifyElement = await this.findElement(step.target);
+              const elementText = await verifyElement.getText();
+              if (elementText.toLowerCase().includes(searchTextLower)) {
+                console.log(chalk.green(`     ✅ Text "${step.value}" found in element`));
+              } else {
+                throw new Error(`Expected text "${step.value}" not found on page or in element`);
+              }
+            } catch (elementError) {
+              // Log what text is actually on the page for debugging
+              const visibleText = await this.browser!.$('body').getText();
+              console.log(chalk.red(`     ❌ Text "${step.value}" not found. Available text: ${visibleText.substring(0, 200)}...`));
+              throw new Error(`Expected text "${step.value}" not found on page`);
+            }
+          }
+        } else {
+          // Just verify element exists
+          await this.findElement(step.target);
+        }
+        break;
+
+      case 'screenshot':
+        const screenshotPath = await this.takeScreenshot(step.target || 'step-screenshot');
+        this.screenshots.push(screenshotPath);
+        break;
+
+      case 'smart-wait':
+        // Smart wait with expected data detection
+        console.log(chalk.yellow(`     ⏳ Smart waiting for: "${step.target}"`));
+        if (step.value) {
+          console.log(chalk.yellow(`     🎯 Expected data: "${step.value}"`));
+        }
+        
+        const maxWaitTime = 30000; // Default 30 seconds
+        const startTime = Date.now();
+        
+        await this.browser!.waitUntil(async () => {
+          try {
+            // First try to find the element
+            const element = await this.findElement(step.target);
+            
+            // If expected data is provided, check if it appears
+            if (step.value) {
+              const elementText = await element.getText();
+              const pageText = await this.browser!.getPageSource();
+              
+              if (elementText.includes(step.value) || pageText.includes(step.value)) {
+                console.log(chalk.green(`     ✅ Expected data "${step.value}" found!`));
+                return true;
+              }
+            } else {
+              // Just check if element is visible
+              const isDisplayed = await element.isDisplayed();
+              if (isDisplayed) {
+                console.log(chalk.green(`     ✅ Element "${step.target}" found and visible!`));
+                return true;
+              }
+            }
+            
+            return false;
+          } catch (error) {
+            // Element not found yet, continue waiting
+            return false;
+          }
+        }, {
+          timeout: maxWaitTime,
+          timeoutMsg: `Smart wait timeout: "${step.target}"${step.value ? ` with "${step.value}"` : ''} not found within ${maxWaitTime/1000}s`
+        });
+        
+        const actualWaitTime = (Date.now() - startTime) / 1000;
+        console.log(chalk.green(`     ⏱️  Smart wait completed in ${actualWaitTime.toFixed(1)}s`));
+        break;
+
+      case 'wait-time':
+        const waitTime = parseInt(step.target) * 1000;
+        await this.browser.pause(waitTime);
+        break;
+
+      default:
+        throw new Error(`Unknown recorded action: ${step.action}`);
+    }
+  }
+
+  private async findElement(description: string): Promise<WebdriverIO.Element> {
+    if (!this.browser) throw new Error('Browser not initialized');
+
+    // Try different strategies to find the element
+    const selectors = [
+      // Common input selectors
+      `input[placeholder*="${description}"]`,
+      `input[name*="${description}"]`,
+      `input[id*="${description}"]`,
+      `label[for*="${description}"]`,
+      `[data-testid*="${description}"]`,
+      `[aria-label*="${description}"]`,
+      
+      // Button selectors
+      `button:contains("${description}")`,
+      `input[value*="${description}"]`,
+      
+      // Common form elements
+      `input[type="email"]`,
+      `input[type="password"]`,
+      `input[type="text"]`,
+      `button[type="submit"]`,
+      `input[type="submit"]`,
+      
+      // Generic selectors
+      `*[class*="${description}"]`,
+      `*[id*="${description}"]`,
+      `*[name*="${description}"]`
+    ];
+
+    for (const selector of selectors) {
+      try {
+        const element = await this.browser.$(selector);
+        if (await element.isExisting()) {
+          return element;
+        }
+      } catch (error) {
+        // Continue to next selector
+      }
+    }
+
+    // If no element found, try a more generic approach
+    try {
+      // Try to find by partial text match using XPath
+      const xpathSelectors = [
+        `//*[contains(text(), "${description}")]`,
+        `//button[contains(text(), "${description}")]`,
+        `//input[contains(@placeholder, "${description}")]`,
+        `//label[contains(text(), "${description}")]`
+      ];
+
+      for (const xpathSelector of xpathSelectors) {
+        try {
+          const element = await this.browser.$(`xpath=${xpathSelector}`);
+          if (await element.isExisting()) {
+            return element;
+          }
+        } catch (error) {
+          // Continue to next XPath selector
+        }
+      }
+    } catch (error) {
+      // Continue to next strategy
+    }
+
+    // Last resort: try to find any element with similar text
+    try {
+      const elements = await this.browser.$$('*');
+      for (const element of elements) {
+        try {
+          const text = await element.getText();
+          if (text && text.toLowerCase().includes(description.toLowerCase())) {
+            return element;
+          }
+        } catch (error) {
+          // Continue to next element
+        }
+      }
+    } catch (error) {
+      // Continue to next strategy
+    }
+
+    throw new Error(`Element not found: ${description}`);
+  }
+
+  private async findFormField(description: string, value: string): Promise<WebdriverIO.Element> {
+    if (!this.browser) throw new Error('Browser not initialized');
+
+    // Intelligent form field detection based on description and value
+    const isEmail = description.toLowerCase().includes('email') || 
+                   (value && value.includes('@'));
+    const isPassword = description.toLowerCase().includes('password') || 
+                      description.toLowerCase().includes('pass');
+
+    let selectors: string[] = [];
+
+    if (isEmail) {
+      selectors = [
+        'input[type="email"]',
+        'input[name="email"]',
+        'input[id="email"]',
+        'input[placeholder*="email"]',
+        'input[placeholder*="Email"]',
+        'input[data-testid*="email"]',
+        'input[aria-label*="email"]',
+        'input[aria-label*="Email"]'
+      ];
+    } else if (isPassword) {
+      selectors = [
+        'input[type="password"]',
+        'input[name="password"]',
+        'input[id="password"]',
+        'input[placeholder*="password"]',
+        'input[placeholder*="Password"]',
+        'input[data-testid*="password"]',
+        'input[aria-label*="password"]',
+        'input[aria-label*="Password"]'
+      ];
+    } else {
+      // Generic input field
+      selectors = [
+        'input[type="text"]',
+        'input[placeholder*="' + description + '"]',
+        'input[name*="' + description + '"]',
+        'input[id*="' + description + '"]',
+        'textarea',
+        'select'
+      ];
+    }
+
+    // Try each selector
+    for (const selector of selectors) {
+      try {
+        const element = await this.browser.$(selector);
+        if (await element.isExisting()) {
+          return element;
+        }
+      } catch (error) {
+        // Continue to next selector
+      }
+    }
+
+    // If no specific field found, try the general findElement method
+    return await this.findElement(description);
+  }
+
+  private async findButton(description: string): Promise<WebdriverIO.Element> {
+    if (!this.browser) throw new Error('Browser not initialized');
+
+    // Try different strategies to find the button
+    const selectors = [
+      // Specific button selectors for login
+      'button[type="submit"]',
+      'input[type="submit"]',
+      'button[class*="login"]',
+      'button[class*="submit"]',
+      'button[id*="login"]',
+      'button[id*="submit"]',
+      
+      // Text-based selectors
+      `button:contains("${description}")`,
+      `input[value*="${description}"]`,
+      
+      // XPath selectors for text matching
+      `//button[contains(text(), "${description}")]`,
+      `//input[contains(@value, "${description}")]`,
+      `//*[contains(text(), "${description}") and (self::button or self::input)]`,
+      
+      // Generic selectors
+      `*[class*="${description}"]`,
+      `*[id*="${description}"]`,
+      `*[name*="${description}"]`,
+      
+      // Common button patterns
+      'button',
+      'input[type="submit"]',
+      'input[type="button"]'
+    ];
+
+    for (const selector of selectors) {
+      try {
+        const element = await this.browser.$(selector);
+        if (await element.isExisting()) {
+          console.log(chalk.gray(`     Found button using selector: ${selector}`));
+          return element;
+        }
+      } catch (error) {
+        // Continue to next selector
+      }
+    }
+
+    // If no button found, try the general findElement method
+    console.log(chalk.yellow(`     No specific button found, trying general element search...`));
+    return await this.findElement(description);
+  }
+
+  private async checkFieldError(element: WebdriverIO.Element): Promise<boolean> {
+    try {
+      // Check for common error indicators
+      const className = await element.getAttribute('class');
+      const hasErrorClass = Boolean(className && (className.includes('error') || 
+                                        className.includes('invalid') || 
+                                        className.includes('has-error')));
+      
+      const hasErrorAttribute = await element.getAttribute('aria-invalid') === 'true';
+      
+      // Check for error message nearby
+      const parent = await element.$('..');
+      const errorMessage = await parent.$('.error-message, .invalid-feedback, [role="alert"]');
+      const hasErrorMessage = await errorMessage.isExisting();
+      
+      // Check for red border or error styling
+      try {
+        const styles = await element.getCSSProperty('border-color');
+        const hasErrorStyle = Boolean(styles.value && (styles.value.includes('red') || styles.value.includes('rgb(255, 0, 0)')));
+        return hasErrorClass || hasErrorAttribute || hasErrorMessage || hasErrorStyle;
+      } catch (styleError) {
+        return hasErrorClass || hasErrorAttribute || hasErrorMessage;
+      }
+    } catch (error) {
+      return false;
+    }
   }
 }

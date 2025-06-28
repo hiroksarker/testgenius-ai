@@ -1,421 +1,39 @@
-# 🧠 TestGenius AI
+# 🤖 TestGenius AI - Intelligent E2E Testing Framework
 
-**AI-Driven E2E Testing Framework with WebdriverIO**
-
-Write tests in plain English. Let AI generate, validate, and fix them automatically.
-
-[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL%203.0-blue.svg)](https://opensource.org/licenses/AGPL-3.0)
-[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
-[![WebdriverIO](https://img.shields.io/badge/WebdriverIO-8+-orange.svg)](https://webdriver.io/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![WebdriverIO](https://img.shields.io/badge/WebdriverIO-4.0.0+-green.svg)](https://webdriver.io/)
+[![Node.js](https://img.shields.io/badge/Node.js-18.0.0+-green.svg)](https://nodejs.org/)
 [![Allure](https://img.shields.io/badge/Allure-Reporting-blue.svg)](https://docs.qameta.io/allure/)
+[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](CONTRIBUTING.md)
+[![Code of Conduct](https://img.shields.io/badge/code%20of%20conduct-1.0.0-ff69b4.svg)](CODE_OF_CONDUCT.md)
+[![npm version](https://img.shields.io/npm/v/testgenius-ai.svg)](https://www.npmjs.com/package/testgenius-ai)
+[![npm downloads](https://img.shields.io/npm/dm/testgenius-ai.svg)](https://www.npmjs.com/package/testgenius-ai)
 
-## 🎯 Overview
+> **🚀 Open Source AI-Powered End-to-End Testing Framework**
 
-TestGenius is a revolutionary AI-powered end-to-end testing framework that combines the power of WebdriverIO with advanced AI capabilities. Write test scenarios in natural language and let our AI engine handle the complex browser automation.
+TestGenius AI is a cutting-edge, open-source E2E testing framework that combines the power of WebdriverIO with intelligent AI-driven test execution. Built with TypeScript and designed for modern web applications, it provides an intuitive way to record, generate, and execute comprehensive test scenarios.
 
-### ✨ Key Features
+## 🚀 Quick Installation
 
-- 🤖 **AI-Powered Execution**: GPT-4o analyzes page structure for intelligent automation
-- 📸 **Visual Testing**: Automatic screenshot capture and visual validation
-- 🎙️ **Interactive Recorder**: Create tests on-the-fly with guided prompts
-- 📊 **Beautiful Allure Reports**: Professional, interactive test reporting with analytics
-- 🏷️ **Smart Tagging**: Organize tests by priority, tags, and categories
-- ⚡ **Parallel Execution**: Run multiple tests simultaneously
-- 🔄 **Session Tracking**: Complete test execution logging
-- 🛠️ **Modular Design**: Clean, maintainable, extensible architecture
-- 🌐 **Direct Browser Automation**: No standalone Selenium server required
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Node.js 18+
-- Chromium-based browser (Chrome, Chromium, Edge)
-- OpenAI API Key
-
-### Installation
-
-1. **Clone and install dependencies:**
-   ```bash
-   git clone <repository-url>
-   cd testgenius-ai
-   npm install
-   ```
-
-2. **Build the project:**
-   ```bash
-   npm run build
-   ```
-
-3. **Set up environment variables:**
-   ```bash
-   # Run the interactive environment setup script
-   npm run setup:env
-   
-   # Or manually copy the example
-   cp env.example .env
-   ```
-
-4. **Configure your OpenAI API key:**
-   ```bash
-   # Edit the .env file to add your OpenAI API key
-   nano .env
-   ```
-
-5. **Run tests directly (no standalone server needed):**
-   ```bash
-   npm start run test all
-   ```
-
-### Your First Test
-
-1. **Create a test using the recorder:**
-   ```bash
-   npm start run test-recorder
-   ```
-
-2. **Or create a test manually:**
-   ```typescript
-   // src/tests/login-test.ts
-   export const LOGIN_TEST = {
-     id: "AUTH-001",
-     name: "Basic Login Test",
-     description: "Test login functionality with valid credentials",
-     priority: "High",
-     tags: ["authentication", "login", "smoke"],
-     site: "https://example.com",
-     testData: {
-       email: "test@example.com",
-       password: "password123"
-     },
-     task: "Navigate to the login page, enter valid credentials, and verify successful login"
-   };
-   ```
-
-3. **Run your test:**
-   ```bash
-   npm start run test AUTH-001
-   ```
-
-## 🌐 The Internet Testing Site
-
-TestGenius AI includes comprehensive test examples for [The Internet](https://the-internet.herokuapp.com/), a popular testing site designed specifically for web automation. This site provides diverse UI elements and scenarios perfect for demonstrating AI-powered testing capabilities.
-
-### Quick Setup for The Internet Tests
-
-1. **Run the setup script:**
-   ```bash
-   npm run setup:internet
-   ```
-
-2. **List available tests:**
-   ```bash
-   npm run test:internet:list
-   ```
-
-3. **Run all tests:**
-   ```bash
-   npm run test:internet
-   ```
-
-4. **Run specific test:**
-   ```bash
-   npm run test:internet:single INTERNET-001
-   ```
-
-5. **Run tests by tag:**
-   ```bash
-   npm run test:internet:tag forms
-   ```
-
-### Available Test Categories
-
-- **Authentication** - Login forms and security tests
-- **Forms** - Checkboxes, dropdowns, file uploads
-- **JavaScript** - Alerts, popups, dynamic content
-- **Interaction** - Hover effects, keyboard input
-- **Performance** - Slow loading resources
-- **DOM** - Complex table structures and elements
-
-### Why The Internet?
-
-- ✅ **Diverse UI Elements** - Forms, buttons, dropdowns, checkboxes
-- ✅ **Dynamic Content** - Pages that change content dynamically  
-- ✅ **JavaScript Interactions** - Alerts, popups, hover effects
-- ✅ **Complex Scenarios** - Authentication, file handling, DOM manipulation
-- ✅ **Performance Testing** - Slow loading resources
-- ✅ **Edge Cases** - Broken images, challenging DOM structures
-- ✅ **Real-world Patterns** - Common web application scenarios
-
-For detailed information, see [THE_INTERNET_TESTING_GUIDE.md](./THE_INTERNET_TESTING_GUIDE.md).
-
-## 📊 Allure Reporting
-
-TestGenius AI now features **Allure reporting** - the industry standard for beautiful, interactive test reports.
-
-### 🎨 Allure Report Features
-
-- **Interactive Dashboard** - Modern, responsive UI with charts and graphs
-- **Step-by-Step Execution** - Detailed test execution with screenshots
-- **Test Metadata** - Tags, priority, parameters, and environment info
-- **Trend Analysis** - Track test performance over time
-- **Filtering & Search** - Find tests by tags, status, or custom criteria
-- **Export Functionality** - Share reports in various formats
-
-### 📈 Using Allure Reports
-
-1. **Run tests** (Allure results are generated automatically):
-   ```bash
-   npm run test:internet:single INTERNET-001
-   ```
-
-2. **Generate Allure report:**
-   ```bash
-   npm run allure:generate
-   ```
-
-3. **Open Allure report in browser:**
-   ```bash
-   npm run allure:open
-   ```
-
-4. **Serve Allure report locally** (for real-time updates):
-   ```bash
-   npm run allure:serve
-   ```
-
-5. **Clean Allure results:**
-   ```bash
-   npm run allure:clean
-   ```
-
-### 📋 Allure Report Structure
-
-```
-allure-results/          # Raw test results
-├── testgenius-*.json    # Test metadata
-└── *.png               # Screenshots
-
-allure-report/           # Generated HTML report
-├── index.html          # Main dashboard
-├── widgets/            # Charts and graphs
-└── data/              # Report data
-```
-
-## 📖 Documentation
-
-### Core Commands
-
-#### Test Execution
-```bash
-# Run all tests
-npm start run test all
-
-# Run specific test
-npm start run test AUTH-001
-
-# Run tests by tag
-npm start run test --tag smoke
-npm start run test --tag authentication
-
-# Run tests by priority
-npm start run test --priority High
-npm start run test --priority Medium
-
-# Run with different browser
-npm start run test all --browser firefox
-
-# Run in headed mode (non-headless)
-npm start run test all --no-headless
-
-# Parallel execution
-npm start run test all --parallel 3
-```
-
-#### Test Creation & Recording
-```bash
-# Start interactive test recorder
-npm start run test-recorder
-
-# List all available tests
-npm start list
-
-# List tests by tag
-npm start list --tag smoke
-
-# List tests by priority
-npm start list --priority High
-```
-
-#### Reports & Analytics
-```bash
-# Generate Allure report
-npm run allure:generate
-
-# Open Allure report
-npm run allure:open
-
-# Serve Allure report locally
-npm run allure:serve
-
-# Generate HTML report (legacy)
-npm start generate report
-
-# Generate summary report
-npm start generate report --summary
-
-# Open report in browser
-npm start open report
-```
-
-#### Project Management
-```bash
-# Initialize new project
-npm start init
-
-# Clean up old results
-npm start cleanup results
-
-# Setup environment
-npm run setup:env
-
-# Setup Internet tests
-npm run setup:internet
-```
-
-### Environment Variables
-
-Create a `.env` file with the following variables:
+### NPM Install (Recommended)
 
 ```bash
-# OpenAI Configuration
-OPENAI_API_KEY=your_openai_api_key_here
-OPENAI_MODEL=gpt-4o
-AI_TEMPERATURE=0.1
-AI_MAX_TOKENS=2000
-AI_RETRY_ATTEMPTS=3
+# Install globally
+npm install -g testgenius-ai
 
-# WebdriverIO Configuration
-DEFAULT_BROWSER=chrome
-DEFAULT_HEADLESS=false
-DEFAULT_VIEWPORT=1920x1080
-DEFAULT_TIMEOUT=30000
-DEFAULT_WAIT_TIMEOUT=5000
+# Or install locally
+npm install testgenius-ai
 
-# The Internet Test Site
-THE_INTERNET_BASE_URL=https://the-internet.herokuapp.com
-THE_INTERNET_USERNAME=tomsmith
-THE_INTERNET_PASSWORD=SuperSecretPassword!
-
-# Reporting Configuration
-REPORT_OUTPUT_DIR=reports
-INCLUDE_SCREENSHOTS=true
-INCLUDE_CONSOLE_LOGS=true
+# Set up environment
+testgenius setup:env
 ```
 
-### Configuration File
-
-The `testgenius.config.js` file allows you to customize:
-
-- **AI Settings** - Model, temperature, retry attempts
-- **Browser Configuration** - Headless mode, viewport, timeouts
-- **Test Execution** - Parallel execution, retry logic
-- **Reporting** - Output directories, retention policies
-- **Environment-specific** - Staging, production, development settings
-
-## 🏗️ Architecture
-
-### Core Components
-
-```
-src/
-├── bin/
-│   └── testgenius.ts          # CLI entry point
-├── framework/
-│   ├── core/                  # Core framework classes
-│   │   ├── TestRunner.ts      # Main test execution engine
-│   │   ├── AITestExecutor.ts  # AI-powered test execution
-│   │   ├── TestRecorder.ts    # Interactive test recording
-│   │   ├── ConfigManager.ts   # Configuration management
-│   │   ├── ReportGenerator.ts # Report generation
-│   │   └── ...
-│   └── tools/                 # Browser automation tools
-│       ├── BrowserTools.ts    # Browser management
-│       ├── NavigationTools.ts # Page navigation
-│       ├── InteractionTools.ts # Element interaction
-│       └── VerificationTools.ts # Assertions and verification
-├── tests/                     # Test definitions
-│   ├── the-internet-tests.ts  # The Internet test suite
-│   └── ...
-└── types/                     # TypeScript type definitions
-    └── index.ts
-```
-
-### AI Integration
-
-TestGenius uses OpenAI's GPT-4o to:
-
-1. **Analyze Test Scenarios** - Understand natural language test descriptions
-2. **Generate Execution Plans** - Create step-by-step automation plans
-3. **Adapt to Page Changes** - Handle dynamic content and UI updates
-4. **Provide Fallback Logic** - Intelligent error recovery and retry mechanisms
-
-### Browser Automation
-
-- **Direct Browser Control** - No standalone Selenium server required
-- **WebdriverIO Integration** - Modern, reliable browser automation
-- **Cross-browser Support** - Chrome, Firefox, Safari, Edge
-- **Headless/Headed Mode** - Flexible execution options
-
-## 🧪 Testing
-
-### Running Tests
-
-```bash
-# Build the project
-npm run build
-
-# Run all tests
-npm start run test all
-
-# Run specific test
-npm start run test AUTH-001
-
-# Run Internet tests
-npm run test:internet
-
-# Run single Internet test
-npm run test:internet:single INTERNET-001
-```
-
-### Development
-
-```bash
-# Watch mode for development
-npm run dev
-
-# Linting
-npm run lint
-npm run lint:fix
-
-# Type checking
-npm run type-check
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Ensure all tests pass
-6. Submit a pull request
-
-### Development Setup
+### From Source
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/hiroksarker/testgenius-ai.git
 cd testgenius-ai
 
 # Install dependencies
@@ -426,39 +44,318 @@ npm run build
 
 # Set up environment
 npm run setup:env
+```
+
+## ✨ Key Features
+
+- 🤖 **AI-Powered Execution**: Intelligent test execution with smart waits and verifications
+- 📹 **Interactive Recording**: Step-by-step test recording with continuous mode
+- 🌐 **Multi-Browser Support**: Chrome, Firefox, Safari, Edge automation
+- 📊 **Professional Reporting**: Allure-based comprehensive test reports
+- 📋 **BDD Support**: Behavior-driven development test scenarios
+- 🔧 **CLI Interface**: Powerful command-line interface for test management
+- 🔒 **Security First**: Built-in security features and best practices
+- 📚 **Complete Documentation**: Comprehensive guides and examples
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- **Node.js**: 18.0.0 or higher
+- **npm**: 9.0.0 or higher
+- **Chrome/Firefox**: For browser automation
+
+### First Test
+
+```bash
+# Record a test
+testgenius record
+
+# Run all tests
+testgenius run test all
+
+# Generate and view reports
+testgenius allure:generate
+testgenius allure:open
+```
+
+## 📖 Documentation
+
+- **[Wiki Home](WIKI_HOME.md)** - Complete project documentation
+- **[Quick Start Guide](QUICKSTART.md)** - Get started in minutes
+- **[Contributing Guidelines](CONTRIBUTING.md)** - How to contribute
+- **[Code of Conduct](CODE_OF_CONDUCT.md)** - Community standards
+- **[Security Policy](SECURITY.md)** - Security reporting and response
+- **[Changelog](CHANGELOG.md)** - Version history and updates
+
+## 🎯 Core Components
+
+### 🤖 AI Test Executor
+Intelligent test execution with smart waits, verifications, and error recovery.
+
+```typescript
+// Smart execution with AI-powered waits
+const executor = new AITestExecutor();
+await executor.executeTest(testDefinition);
+```
+
+### 📹 Test Recorder
+Interactive step-by-step recording with continuous mode support.
+
+```bash
+# Start recording
+testgenius record
+
+# Available commands:
+# - done: Finish recording
+# - stop: Stop recording
+# - back: Go back one step
+# - list: Show recorded steps
+# - clear: Clear all steps
+# - help: Show help
+```
+
+### 🌐 Browser Tools
+Comprehensive browser automation with WebdriverIO.
+
+```typescript
+// Navigate and interact
+await browserTools.navigateTo('https://example.com');
+await browserTools.clickElement('#login-button');
+await browserTools.fillField('#username', 'testuser');
+```
+
+### 📊 Allure Reporting
+Professional test reporting with detailed step information.
+
+```bash
+# Generate reports
+testgenius allure:generate
+
+# View reports
+testgenius allure:open
+```
+
+## 🧪 Test Examples
+
+### Basic Test Recording
+
+```bash
+# Start recording
+testgenius record
+
+# Follow the prompts to record your test
+# The framework will guide you through each step
+```
+
+### BDD Test Scenario
+
+```gherkin
+Feature: Login Functionality
+
+Background:
+  Given I am on the login page
+
+Scenario: Successful Login
+  When I enter valid credentials
+  And I click the login button
+  Then I should be logged in successfully
+  And I should see the dashboard
+```
+
+### Programmatic Test
+
+```typescript
+const testDefinition = {
+  id: 'login-test',
+  name: 'User Login Test',
+  steps: [
+    {
+      action: 'navigate',
+      target: 'https://the-internet.herokuapp.com/login',
+      value: null
+    },
+    {
+      action: 'fill',
+      target: '#username',
+      value: 'tomsmith'
+    },
+    {
+      action: 'fill',
+      target: '#password',
+      value: 'SuperSecretPassword!'
+    },
+    {
+      action: 'click',
+      target: 'button[type="submit"]',
+      value: null
+    },
+    {
+      action: 'verify',
+      target: '.flash.success',
+      value: 'You logged into a secure area!'
+    }
+  ]
+};
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+
+```bash
+# Copy example environment file
+cp env.example .env
+
+# Configure your environment
+TEST_BASE_URL=https://your-app.com
+TEST_TIMEOUT=30000
+BROWSER_NAME=chrome
+HEADLESS_MODE=true
+```
+
+### WebdriverIO Configuration
+
+```javascript
+// testgenius.config.js
+module.exports = {
+  runner: 'local',
+  specs: ['./src/tests/**/*.js'],
+  maxInstances: 1,
+  capabilities: [{
+    browserName: 'chrome',
+    'goog:chromeOptions': {
+      args: ['--headless', '--no-sandbox']
+    }
+  }],
+  logLevel: 'info',
+  bail: 0,
+  baseUrl: 'https://the-internet.herokuapp.com',
+  waitforTimeout: 10000,
+  connectionRetryTimeout: 120000,
+  connectionRetryCount: 3,
+  services: ['chromedriver'],
+  framework: 'mocha',
+  reporters: ['spec', ['allure', {
+    outputDir: 'allure-results',
+    disableWebdriverStepsReporting: true,
+    disableWebdriverScreenshotsReporting: false
+  }]]
+};
+```
+
+## 📊 Available Commands
+
+### Test Management
+
+```bash
+# Record a new test
+testgenius record
+
+# List all tests
+testgenius list
+
+# Run all tests
+testgenius run test all
+
+# Run specific test
+testgenius run test TEST_ID
+
+# Run tests in headed mode
+testgenius run test all --no-headless
+```
+
+### Development
+
+```bash
+# Build project
+npm run build
+
+# Watch for changes
+npm run watch
+
+# Lint code
+npm run lint
+
+# Run unit tests
+npm test
+```
+
+### Reporting
+
+```bash
+# Generate Allure report
+testgenius allure:generate
+
+# Open Allure report
+testgenius allure:open
+
+# Clean reports
+testgenius allure:clean
+```
+
+## 🤝 Contributing
+
+We welcome contributions from the community! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+
+### Quick Contribution
+
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Commit** your changes (`git commit -m 'feat: add amazing feature'`)
+4. **Push** to the branch (`git push origin feature/amazing-feature`)
+5. **Open** a Pull Request
+
+### Development Setup
+
+```bash
+# Fork and clone
+git clone https://github.com/hiroksarker/testgenius-ai.git
+cd testgenius-ai
+
+# Install dependencies
+npm install
+
+# Build project
+npm run build
 
 # Run tests
 npm start run test all
 ```
 
+## 🐛 Bug Reports & Feature Requests
+
+- **Bug Reports**: [Create an issue](https://github.com/hiroksarker/testgenius-ai/issues)
+- **Feature Requests**: [Start a discussion](https://github.com/hiroksarker/testgenius-ai/discussions)
+- **Security Issues**: Email [security@testgenius.ai](mailto:security@testgenius.ai)
+
 ## 📄 License
 
-This project is licensed under the AGPL-3.0 License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
-- [WebdriverIO](https://webdriver.io/) - Modern browser automation
-- [OpenAI](https://openai.com/) - AI capabilities
-- [Allure Framework](https://docs.qameta.io/allure/) - Beautiful test reporting
-- [The Internet](https://the-internet.herokuapp.com/) - Testing site examples
+- **WebdriverIO Team** - For the excellent browser automation framework
+- **Allure Team** - For the comprehensive reporting solution
+- **Open Source Community** - For inspiration and contributions
 
 ## 📞 Support
 
-### Get Help
+- **Documentation**: [Wiki](WIKI_HOME.md)
+- **Issues**: [GitHub Issues](https://github.com/hiroksarker/testgenius-ai/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/hiroksarker/testgenius-ai/discussions)
+- **Email**: [support@testgenius.ai](mailto:support@testgenius.ai)
 
-- 📧 **Email Support**: hirok.sarker@gmail.com
-- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/hiroksarker/testgenius-ai/issues)
-- 📖 **Documentation**: [Wiki](https://github.com/hiroksarker/testgenius-ai/wiki)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/hiroksarker/testgenius-ai/discussions)
+## 🌟 Star History
 
-### Quick Support
-
-For immediate help:
-1. Check the [Wiki](https://github.com/hiroksarker/testgenius-ai/wiki) for common solutions
-2. Search existing [Issues](https://github.com/hiroksarker/testgenius-ai/issues)
-3. Create a new issue with detailed information
-4. Email for urgent matters: hirok.sarker@gmail.com
+[![Star History Chart](https://api.star-history.com/svg?repos=hiroksarker/testgenius-ai&type=Date)](https://star-history.com/#hiroksarker/testgenius-ai&Date)
 
 ---
 
-**Made with ❤️ by hiroksarker** 
+**Made with ❤️ by Hirok Sarker**
+
+[![GitHub contributors](https://img.shields.io/github/contributors/hiroksarker/testgenius-ai)](https://github.com/hiroksarker/testgenius-ai/graphs/contributors)
+[![GitHub stars](https://img.shields.io/github/stars/hiroksarker/testgenius-ai)](https://github.com/hiroksarker/testgenius-ai/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/hiroksarker/testgenius-ai)](https://github.com/hiroksarker/testgenius-ai/network)
+[![GitHub issues](https://img.shields.io/github/issues/hiroksarker/testgenius-ai)](https://github.com/hiroksarker/testgenius-ai/issues)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/hiroksarker/testgenius-ai)](https://github.com/hiroksarker/testgenius-ai/pulls) 

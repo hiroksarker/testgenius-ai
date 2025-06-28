@@ -363,20 +363,46 @@ export class TestRunner {
   private startAllureTest(test: TestDefinition): void {
     // Create Allure test metadata file
     const testId = `testgenius-${test.id}-${Date.now()}`;
+    
+    // Process recorded steps for Allure
+    const recordedSteps = (test.testData as any)?.steps || [];
+    const allureSteps = Array.isArray(recordedSteps) ? recordedSteps.map((step: any, index: number) => ({
+      name: step.description,
+      status: 'passed',
+      stage: 'finished',
+      start: new Date(step.timestamp).getTime(),
+      stop: new Date(step.timestamp).getTime(),
+      parameters: [
+        { name: 'Action', value: step.action },
+        ...(step.target ? [{ name: 'Target', value: step.target }] : []),
+        ...(step.value ? [{ name: 'Value', value: step.value }] : [])
+      ]
+    })) : [];
+
     const allureTest = {
       name: test.name,
       description: test.description,
       fullName: `${test.id}: ${test.name}`,
+      status: 'passed',
+      stage: 'finished',
+      start: Date.now(),
+      stop: Date.now(),
       labels: [
         { name: 'testId', value: test.id },
         { name: 'priority', value: test.priority },
         { name: 'site', value: test.site },
+        { name: 'framework', value: 'TestGenius AI' },
+        { name: 'language', value: 'TypeScript' },
         ...(test.tags?.map(tag => ({ name: 'tag', value: tag })) || [])
       ],
-      parameters: test.testData ? Object.entries(test.testData).map(([key, value]) => ({
-        name: key,
-        value: String(value)
-      })) : []
+      parameters: test.testData ? Object.entries(test.testData)
+        .filter(([key]) => key !== 'steps') // Exclude steps from parameters
+        .map(([key, value]) => ({
+          name: key,
+          value: typeof value === 'object' ? JSON.stringify(value) : String(value)
+        })) : [],
+      steps: allureSteps,
+      attachments: []
     };
 
     const testFile = path.join(this.allureResultsDir, `${testId}-result.json`);
@@ -391,6 +417,9 @@ export class TestRunner {
       const testData = fs.readJsonSync(latestTestFile);
       
       testData.status = status;
+      testData.stage = 'finished';
+      testData.stop = Date.now();
+      
       if (error) {
         testData.statusDetails = {
           message: error.message,

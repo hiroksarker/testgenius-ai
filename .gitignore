@@ -80,4 +80,7 @@ pids
 
 # Allure test reports
 allure-results/
-allure-report/ 
+allure-report/
+
+# Test files (exclude from commits as they are for testing purposes)
+src/tests/ 

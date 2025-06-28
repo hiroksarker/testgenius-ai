@@ -1,0 +1,59 @@
+# Source files
+src/
+*.ts
+*.tsx
+
+# Development files
+.git/
+.gitignore
+.github/
+.vscode/
+.idea/
+*.log
+logs/
+
+# Test files
+tests/
+test-results/
+screenshots/
+allure-results/
+allure-report/
+coverage/
+
+# Build artifacts
+*.tgz
+*.tar.gz
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Documentation build
+docs/build/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Scripts
+setup-*.sh
+convert-*.sh
+
+# Project files
+PROJECT_SUMMARY.md
+THE_INTERNET_TESTING_GUIDE.md
+THE_INTERNET_IMPLEMENTATION_SUMMARY.md
+DIRECT_BROWSER_AUTOMATION_SUMMARY.md
+ENVIRONMENT_VARIABLES_GUIDE.md
+ENVIRONMENT_VARIABLES_IMPLEMENTATION_SUMMARY.md
+TYPESCRIPT_MIGRATION_SUMMARY.md
+
+# Test files
+test-file.txt
+internet-tests.js 
