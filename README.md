@@ -359,7 +359,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Documentation**: [Wiki](WIKI_HOME.md)
 - **Issues**: [GitHub Issues](https://github.com/hiroksarker/testgenius-ai/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/hiroksarker/testgenius-ai/discussions)
-- **Email**: [support@testgenius.ai](mailto:support@testgenius.ai)
+- **Email**: [hirok.sarker@gmail.com](mailto:hirok.sarker@gmail.com)
 
 ## 🌟 Star History
 

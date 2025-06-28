@@ -22,7 +22,7 @@ We take security vulnerabilities seriously. If you discover a security issue, pl
 ### 📧 Reporting Methods
 
 #### Preferred: Email (Encrypted)
-Send an encrypted email to: **security@testgenius.ai**
+Send an encrypted email to: **hirok.sarker@gmail.com**
 
 **PGP Key**: 
 ```
@@ -191,9 +191,9 @@ Currently, we do not have a formal bug bounty program, but we:
 
 ## Contact Information
 
-- **Security Email**: security@testgenius.ai
-- **General Support**: support@testgenius.ai
-- **GitHub Security**: [Security tab](https://github.com/your-repo/security)
+- **Security Email**: hirok.sarker@gmail.com
+- **General Support**: hirok.sarker@gmail.com
+- **GitHub Security**: [Security tab](https://github.com/hiroksarker/security)
 - **PGP Key**: Available on request
 
 ---

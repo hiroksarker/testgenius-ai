@@ -223,7 +223,7 @@ testgenius-ai/
 - **Documentation**: Check the [Wiki](WIKI_HOME.md)
 - **Issues**: Search [GitHub Issues](https://github.com/your-repo/issues)
 - **Discussions**: Join [GitHub Discussions](https://github.com/your-repo/discussions)
-- **Email**: support@testgenius.ai
+- **Email**: hirok.sarker@gmail.com
 
 ## 📄 License
 
