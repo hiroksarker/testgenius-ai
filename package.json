@@ -1,5 +1,5 @@
 {
-  "name": "testgenius-ai",
+  "name": "@hiroksarker/testgenius-ai",
   "version": "1.0.6",
   "description": "🚀 TestGenius AI - The Ultimate E2E Testing Framework for Everyone | No Coding Required • AI-Powered Automation • Beautiful Reports • Zero Complexity",
   "main": "dist/bin/testgenius.js",

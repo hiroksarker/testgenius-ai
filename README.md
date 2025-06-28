@@ -6,12 +6,13 @@
 ![Version](https://img.shields.io/npm/v/testgenius-ai?style=for-the-badge)
 ![Downloads](https://img.shields.io/npm/dm/testgenius-ai?style=for-the-badge)
 ![License](https://img.shields.io/npm/l/testgenius-ai?style=for-the-badge)
+![Powered by WebdriverIO](https://img.shields.io/badge/Powered%20by-WebdriverIO-green?style=for-the-badge&logo=webdriverio)
 
 **🚀 The Ultimate E2E Testing Framework for QA Engineers**
 
 *No coding required • AI-powered automation • Beautiful reports • Zero complexity*
 
-[![npm install](https://img.shields.io/badge/npm%20install--g%20testgenius--ai-brightgreen?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/testgenius-ai)
+[![npm install](https://img.shields.io/badge/npm%20install--g%20@hiroksarker/testgenius--ai-brightgreen?style=for-the-badge&logo=npm)](https://github.com/hiroksarker/testgenius-ai/packages)
 
 </div>
 
@@ -51,7 +52,7 @@ testgenius report
 
 ### 1️⃣ **Install**
 ```bash
-npm install -g testgenius-ai
+npm install -g @hiroksarker/testgenius-ai
 ```
 
 ### 2️⃣ **Initialize**
@@ -303,6 +304,20 @@ We love contributions! Here's how you can help:
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## ⚡ Powered By
+
+<div align="center">
+
+**Built with the power of [WebdriverIO](https://webdriver.io/) - Next-gen browser and mobile automation test framework**
+
+[![WebdriverIO](https://img.shields.io/badge/WebdriverIO-v9-green?style=for-the-badge&logo=webdriverio)](https://webdriver.io/)
+
+*TestGenius AI leverages WebdriverIO's powerful automation capabilities to provide a simple, AI-powered testing experience for everyone.*
+
+</div>
 
 ---
 
