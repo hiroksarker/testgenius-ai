@@ -270,15 +270,6 @@ module.exports = [
 
 ## 🎉 Success Stories
 
-> *"TestGenius made our QA process 10x faster. No more complex Selenium setup!"*
-> — **Sarah, Senior QA Engineer**
-
-> *"Finally, a testing tool that doesn't require a computer science degree!"*
-> — **Mike, QA Lead**
-
-> *"The interactive recorder is a game-changer for our team."*
-> — **Lisa, Test Automation Specialist**
-
 ---
 
 ## 🤝 Contributing
