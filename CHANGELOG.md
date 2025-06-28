@@ -2,7 +2,7 @@
 
 All notable changes to TestGenius AI will be documented in this file.
 
-## [1.0.0] - 2025-01-XX
+## [1.0.0] - 2025-06-28
 
 ### Added
 - Core Framework with TypeScript

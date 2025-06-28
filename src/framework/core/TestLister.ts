@@ -6,7 +6,7 @@ export class TestLister {
   constructor() {}
 
   async list(options: { tag?: string; priority?: string } = {}): Promise<void> {
-    const testsDir = path.join(process.cwd(), 'src', 'tests');
+    const testsDir = path.join(process.cwd(), 'dist', 'tests');
     if (!(await fs.pathExists(testsDir))) {
       console.log('No tests directory found.');
       return;
@@ -14,7 +14,7 @@ export class TestLister {
     const files = await fs.readdir(testsDir);
     let allTests: TestDefinition[] = [];
     for (const file of files) {
-      if (file.endsWith('.ts')) {
+      if (file.endsWith('.js')) {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         const testModule = require(path.join(testsDir, file));
         allTests.push(...(Object.values(testModule) as TestDefinition[]));
@@ -31,7 +31,7 @@ export class TestLister {
       return;
     }
     for (const test of allTests) {
-      console.log(`- ${test.id}: ${test.name} [${test.priority}] (${test.tags.join(', ')})`);
+      console.log(`- ${test.id}: ${test.name} [${test.priority}] (${test.tags?.join(', ') || ''})`);
     }
   }
 }

@@ -1,4 +1,4 @@
-import OpenAI from 'openai';
+import { ChatOpenAI } from "@langchain/openai";
 import fs from 'fs-extra';
 import path from 'path';
 import chalk from 'chalk';
@@ -17,7 +17,7 @@ import {
 } from '../../types';
 
 export class AITestExecutor {
-  private openai: OpenAI;
+  private llm: ChatOpenAI;
   private browser: Browser | null = null;
   private browserTools: BrowserTools;
   private navigationTools: NavigationTools;
@@ -27,8 +27,11 @@ export class AITestExecutor {
   private screenshots: string[] = [];
 
   constructor() {
-    this.openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY
+    this.llm = new ChatOpenAI({
+      openAIApiKey: process.env.OPENAI_API_KEY,
+      modelName: process.env.OPENAI_MODEL || 'gpt-4o',
+      temperature: 0.1,
+      maxTokens: 2000
     });
     
     this.browserTools = new BrowserTools();
@@ -158,20 +161,14 @@ Example format:
 ]`;
 
     try {
-      const response = await this.openai.chat.completions.create({
-        model: options.model || 'gpt-4o',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
-        ],
-        temperature: 0.1,
-        max_tokens: 2000
-      });
-
-      const planText = response.choices[0].message.content;
-      
+      const response = await this.llm.call([
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt }
+      ]);
+      const planText = response.content;
       // Extract JSON from the response
-      const jsonMatch = planText?.match(/\[[\s\S]*\]/);
+      const planTextString = typeof planText === 'string' ? planText : JSON.stringify(planText);
+      const jsonMatch = planTextString.match(/\[[\s\S]*\]/);
       if (jsonMatch) {
         const plan = JSON.parse(jsonMatch[0]) as TestStep[];
         return {
@@ -499,7 +496,7 @@ Example format:
         await this.browser!.pause(1000);
         
         // Check if text exists anywhere on the page
-        const pageText = await this.browser.getPageSource();
+        const pageText = await this.browser!.getPageSource();
         const pageTextLower = pageText.toLowerCase();
         const searchTextLower = String(step.value).toLowerCase();
         

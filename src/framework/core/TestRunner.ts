@@ -330,7 +330,9 @@ export class TestRunner {
           '--disable-backgrounding-occluded-windows',
           '--disable-renderer-backgrounding',
           '--disable-field-trial-config',
-          '--disable-ipc-flooding-protection'
+          '--disable-ipc-flooding-protection',
+          '--start-maximized',
+          '--disable-blink-features=AutomationControlled'
         ]
       }
     };
@@ -341,7 +343,7 @@ export class TestRunner {
 
     // Use WebdriverIO's direct browser automation (no standalone server needed)
     const wdioOptions = {
-      automationProtocol: 'webdriver' as const,
+      automationProtocol: 'devtools' as const,
       capabilities,
       logLevel: config.webdriverio.logLevel as any,
       timeout: config.webdriverio.timeout,
