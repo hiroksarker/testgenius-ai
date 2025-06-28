@@ -14,7 +14,7 @@ const program = new Command();
 program
   .name('testgenius')
   .description('🧠 TestGenius AI - Simple E2E Testing Framework for QA Engineers')
-  .version('1.0.3');
+  .version('1.0.4');
 
 // Initialize project (QA-friendly)
 program
