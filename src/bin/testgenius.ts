@@ -13,8 +13,8 @@ const program = new Command();
 // Set up the CLI
 program
   .name('testgenius')
-  .description('🧠 TestGenius AI - Simple E2E Testing Framework for QA Engineers')
-  .version('1.0.4');
+  .description('🚀 TestGenius AI - The Ultimate E2E Testing Framework for Everyone')
+  .version('1.0.5');
 
 // Initialize project (QA-friendly)
 program
