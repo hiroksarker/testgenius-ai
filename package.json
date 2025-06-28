@@ -1,6 +1,6 @@
 {
   "name": "testgenius-ai",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "AI-Powered E2E Testing Framework with WebdriverIO - Record, generate, and execute comprehensive test scenarios with intelligent automation",
   "main": "dist/bin/testgenius.js",
   "bin": {
@@ -115,7 +115,11 @@
     "transform": {
       "^.+\\.ts$": "ts-jest"
     },
-    "moduleFileExtensions": ["ts", "js", "json"],
+    "moduleFileExtensions": [
+      "ts",
+      "js",
+      "json"
+    ],
     "collectCoverageFrom": [
       "src/**/*.ts",
       "!src/**/*.d.ts"
