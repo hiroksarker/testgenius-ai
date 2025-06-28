@@ -315,6 +315,47 @@ module.exports = [
 - **Pass/fail statistics**
 - **Performance metrics**
 
+### 🏆 **Allure Reporting (Optional)**
+TestGenius AI supports [Allure](https://docs.qameta.io/allure/) for advanced, interactive test reports.
+
+**Enable Allure in your config:**
+```js
+// testgenius.config.js
+module.exports = {
+  browser: 'chrome',           // chrome, firefox, safari, edge
+  headless: false,             // true for CI/CD
+  timeout: 30000,              // 30 seconds
+  screenshotOnFailure: true,   // Auto-screenshots
+  reportPath: './reports',     // Custom report location
+  logLevel: 'info',            // debug, info, warn, error
+  reporting: {
+    outputDir: 'reports',
+    allure: {
+      enabled: true, // Enable Allure reporting
+      resultsDir: 'allure-results',
+      reportDir: 'allure-report',
+      attachments: true
+    }
+  }
+};
+```
+
+**Or use the CLI flag for one-off runs:**
+```bash
+testgenius run --allure
+```
+
+**View Allure reports:**
+```bash
+# Open Allure report in browser
+testgenius report --allure
+
+# Serve Allure report on a custom port
+testgenius report --allure --serve 8080
+```
+
+> ℹ️ Allure is optional. If not enabled, TestGenius will generate simple HTML reports by default.
+
 ### 🔧 **Flexible Configuration**
 ```javascript
 // testgenius.config.js

@@ -81,6 +81,7 @@ program
   .option('--exclude <files...>', 'Exclude specific files')
   .option('--tag <tag>', 'Run tests with specific tag')
   .option('--priority <priority>', 'Run tests with specific priority (High, Medium, Low)')
+  .option('--allure', 'Generate Allure reports')
   .action(async (testId, options) => {
     try {
       console.log(chalk.blue('🚀 Starting TestGenius Test Runner...'));
@@ -114,6 +115,9 @@ program
       }
       if (options.priority) {
         runOptions.priority = options.priority;
+      }
+      if (options.allure) {
+        runOptions.allure = options.allure;
       }
       
       // If user provided a custom testsDir, update config
@@ -158,35 +162,57 @@ program
 program
   .command('report')
   .description('📊 Generate and open test report')
-  .action(async () => {
+  .option('--allure', 'Open Allure report instead of HTML report')
+  .option('--serve <port>', 'Serve Allure report on specific port (default: 8080)')
+  .action(async (options) => {
     try {
-      console.log(chalk.blue('📊 Generating test report...'));
-      
-      // Find the latest report
-      const fs = require('fs-extra');
-      const path = require('path');
-      
-      const reportsDir = 'reports';
-      if (!(await fs.pathExists(reportsDir))) {
-        console.log(chalk.yellow('⚠️  No reports found. Run tests first with "testgenius run".'));
-        return;
+      if (options.allure) {
+        console.log(chalk.blue('📊 Opening Allure report...'));
+        
+        // Load config to get Allure settings
+        const { ConfigManager } = require('../framework/core/ConfigManager');
+        const { AllureReporter } = require('../framework/core/AllureReporter');
+        
+        const configManager = new ConfigManager();
+        const config = await configManager.loadConfig();
+        const allureReporter = new AllureReporter(config);
+        
+        if (options.serve) {
+          const port = parseInt(options.serve) || 8080;
+          await allureReporter.serveAllureReport(port);
+        } else {
+          await allureReporter.openAllureReport();
+        }
+        
+      } else {
+        console.log(chalk.blue('📊 Generating test report...'));
+        
+        // Find the latest report
+        const fs = require('fs-extra');
+        const path = require('path');
+        
+        const reportsDir = 'reports';
+        if (!(await fs.pathExists(reportsDir))) {
+          console.log(chalk.yellow('⚠️  No reports found. Run tests first with "testgenius run".'));
+          return;
+        }
+        
+        const files = await fs.readdir(reportsDir);
+        const htmlFiles = files.filter((file: string) => file.endsWith('.html')).sort().reverse();
+        
+        if (htmlFiles.length === 0) {
+          console.log(chalk.yellow('⚠️  No HTML reports found. Run tests first with "testgenius run".'));
+          return;
+        }
+        
+        const latestReport = path.join(reportsDir, htmlFiles[0]);
+        console.log(chalk.green(`✅ Latest report: ${latestReport}`));
+        console.log(chalk.blue('🌐 Opening report in browser...'));
+        
+        // Open in browser
+        const open = require('open');
+        await open(latestReport);
       }
-      
-      const files = await fs.readdir(reportsDir);
-      const htmlFiles = files.filter((file: string) => file.endsWith('.html')).sort().reverse();
-      
-      if (htmlFiles.length === 0) {
-        console.log(chalk.yellow('⚠️  No HTML reports found. Run tests first with "testgenius run".'));
-        return;
-      }
-      
-      const latestReport = path.join(reportsDir, htmlFiles[0]);
-      console.log(chalk.green(`✅ Latest report: ${latestReport}`));
-      console.log(chalk.blue('🌐 Opening report in browser...'));
-      
-      // Open in browser
-      const open = require('open');
-      await open(latestReport);
       
     } catch (error) {
       console.error(chalk.red('❌ Failed to generate report:'), (error as Error).message);
@@ -266,6 +292,12 @@ program
     console.log(chalk.gray('  testgenius run --exclude auth.js  - Exclude specific files'));
     console.log(chalk.gray('  testgenius run --headless         - Run tests in headless mode'));
     console.log(chalk.gray('  testgenius run --browser firefox  - Run with Firefox'));
+    console.log(chalk.gray('  testgenius run --allure           - Generate Allure reports'));
+    console.log(chalk.gray('─'.repeat(50)));
+    console.log(chalk.white('Report Commands:'));
+    console.log(chalk.gray('  testgenius report                 - Open HTML report'));
+    console.log(chalk.gray('  testgenius report --allure        - Open Allure report'));
+    console.log(chalk.gray('  testgenius report --allure --serve 8080 - Serve Allure on port 8080'));
     console.log(chalk.gray('─'.repeat(50)));
     console.log(chalk.white('Update Commands:'));
     console.log(chalk.gray('  npm update -g testgenius-ai       - Update to latest version'));

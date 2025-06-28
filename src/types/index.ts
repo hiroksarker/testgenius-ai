@@ -113,6 +113,16 @@ export interface ReportingConfig {
   includeScreenshots: boolean;
   includeConsoleLogs: boolean;
   generateSummary: boolean;
+  // Allure reporting configuration
+  allure: {
+    enabled: boolean;
+    resultsDir: string;
+    reportDir: string;
+    categories?: string;
+    environment?: string;
+    severity?: string;
+    attachments?: boolean;
+  };
 }
 
 export interface SessionConfig {
@@ -158,6 +168,7 @@ export interface TestRunOptions {
   files?: string[];
   testIds?: string[];
   excludeFiles?: string[];
+  allure?: boolean;
 }
 
 export interface ReportOptions {

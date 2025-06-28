@@ -6,6 +6,7 @@ import { AITestExecutor } from './AITestExecutor';
 import { TestSessionManager } from './TestSessionManager';
 import { ConfigManager } from './ConfigManager';
 import { Logger, LogLevel, LogConfig } from './Logger';
+import { AllureReporter } from './AllureReporter';
 import { 
   TestDefinition, 
   TestResult, 
@@ -23,6 +24,7 @@ export class TestRunner {
   private aiExecutor: AITestExecutor;
   private reportGenerator: ReportGenerator;
   private cleanupManager: CleanupManager;
+  private allureReporter: AllureReporter | null = null;
   private browser: Browser | null = null;
   private logger: Logger;
   private isInitialized: boolean = false;
@@ -131,7 +133,23 @@ export class TestRunner {
 
     try {
       const config = await this.configManager.loadConfig();
-      const tests = await this.findTests(testId, options, config);
+      
+      // Create a mutable copy of config for this run
+      const runConfig = JSON.parse(JSON.stringify(config));
+      
+      // Initialize Allure reporter if enabled
+      if (options.allure || (runConfig.reporting?.allure?.enabled)) {
+        // If CLI flag is used, ensure Allure is enabled in config for this run
+        if (options.allure) {
+          if (!runConfig.reporting) runConfig.reporting = {};
+          if (!runConfig.reporting.allure) runConfig.reporting.allure = {};
+          runConfig.reporting.allure.enabled = true;
+        }
+        this.allureReporter = new AllureReporter(runConfig);
+        this.logger.info('📊 Allure reporting enabled');
+      }
+      
+      const tests = await this.findTests(testId, options, runConfig);
 
       if (tests.length === 0) {
         this.logger.warn('⚠️  No tests found matching the criteria.');
@@ -155,7 +173,7 @@ export class TestRunner {
       let failedCount = 0;
 
       // Initialize browser
-      await this.initializeBrowser(options, config);
+      await this.initializeBrowser(options, runConfig);
 
       // Run each test
       for (const test of tests) {
@@ -169,7 +187,7 @@ export class TestRunner {
         
         try {
           // Execute test
-          const result = await this.runSingleTest(test, options, config);
+          const result = await this.runSingleTest(test, options, runConfig);
           const duration = Date.now() - startTime;
           totalDuration += duration;
 
@@ -241,6 +259,13 @@ export class TestRunner {
 
       // Generate simple HTML report
       await this.generateSimpleReport(summary);
+
+      // Generate Allure report if enabled
+      if (this.allureReporter) {
+        await this.allureReporter.generateAllureReport(results);
+        // Serve Allure report live using npx allure serve
+        await this.allureReporter.serveAllureLive();
+      }
 
       return summary;
 

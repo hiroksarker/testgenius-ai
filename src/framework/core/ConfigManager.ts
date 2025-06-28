@@ -72,7 +72,16 @@ export class ConfigManager {
         retentionDays: 30,
         includeScreenshots: true,
         includeConsoleLogs: true,
-        generateSummary: true
+        generateSummary: true,
+        allure: {
+          enabled: false,
+          resultsDir: 'allure-results',
+          reportDir: 'allure-report',
+          categories: undefined,
+          environment: 'default',
+          severity: 'normal',
+          attachments: true
+        }
       },
       session: {
         dataDir: 'sessions',

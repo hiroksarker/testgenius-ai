@@ -76,6 +76,7 @@
   },
   "dependencies": {
     "@langchain/openai": "^0.5.16",
+    "allure-commandline": "^2.27.0",
     "chalk": "^4.1.2",
     "commander": "^11.1.0",
     "devtools": "^8.42.0",
