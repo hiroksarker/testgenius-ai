@@ -11,7 +11,7 @@
 
 *No coding required • AI-powered automation • Beautiful reports • Zero complexity*
 
-[![Install](https://img.shields.io/badge/Install%20Now-npm%20install%20-g%20testgenius--ai-brightgreen?style=for-the-badge)](https://www.npmjs.com/package/testgenius-ai)
+[![npm install](https://img.shields.io/badge/npm%20install--g%20testgenius--ai-brightgreen?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/testgenius-ai)
 
 </div>
 
