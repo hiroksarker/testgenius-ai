@@ -163,7 +163,209 @@ testgenius allure:open
 
 ### Basic Test Recording
 
+```bash
+# Start recording
+testgenius record
+
+# Follow the prompts to record your test
+# The framework will guide you through each step
 ```
+
+### BDD Test Scenario
+
+```gherkin
+Feature: Login Functionality
+
+Background:
+  Given I am on the login page
+
+Scenario: Successful Login
+  When I enter valid credentials
+  And I click the login button
+  Then I should be logged in successfully
+  And I should see the dashboard
+```
+
+### Programmatic Test
+
+```typescript
+const testDefinition = {
+  id: 'login-test',
+  name: 'User Login Test',
+  steps: [
+    {
+      action: 'navigate',
+      target: 'https://the-internet.herokuapp.com/login',
+      value: null
+    },
+    {
+      action: 'fill',
+      target: '#username',
+      value: 'tomsmith'
+    },
+    {
+      action: 'fill',
+      target: '#password',
+      value: 'SuperSecretPassword!'
+    },
+    {
+      action: 'click',
+      target: 'button[type="submit"]',
+      value: null
+    },
+    {
+      action: 'verify',
+      target: '.flash.success',
+      value: 'You logged into a secure area!'
+    }
+  ]
+};
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+
+```bash
+# Copy example environment file
+cp env.example .env
+
+# Configure your environment
+OPENAI_API_KEY=your_openai_api_key_here
+DEFAULT_BROWSER=chrome
+DEFAULT_HEADLESS=true
+DEFAULT_TIMEOUT=30000
+```
+
+### WebdriverIO Configuration
+
+```javascript
+// testgenius.config.js
+module.exports = {
+  openai: {
+    model: 'gpt-4o',
+    temperature: 0.1,
+    maxTokens: 2000
+  },
+  webdriverio: {
+    automationProtocol: 'webdriver',
+    capabilities: {
+      browserName: 'chrome',
+      'goog:chromeOptions': {
+        args: ['--headless', '--no-sandbox']
+      }
+    }
+  }
+};
+```
+
+## 📊 Available Commands
+
+### Test Management
+
+```bash
+# Record a new test
+testgenius record
+
+# List all tests
+testgenius list
+
+# Run all tests
+testgenius run test all
+
+# Run specific test
+testgenius run test TEST_ID
+
+# Run tests in headed mode
+testgenius run test all --no-headless
+```
+
+### Development
+
+```bash
+# Build project
+npm run build
+
+# Watch for changes
+npm run watch
+
+# Lint code
+npm run lint
+
+# Run unit tests
+npm test
+```
+
+### Reporting
+
+```bash
+# Generate Allure report
+testgenius allure:generate
+
+# Open Allure report
+testgenius allure:open
+
+# Clean reports
+testgenius allure:clean
+```
+
+## 🤝 Contributing
+
+We welcome contributions from the community! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+
+### Quick Contribution
+
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Commit** your changes (`git commit -m 'feat: add amazing feature'`)
+4. **Push** to the branch (`git push origin feature/amazing-feature`)
+5. **Open** a Pull Request
+
+### Development Setup
+
+```bash
+# Fork and clone
+git clone https://github.com/hiroksarker/testgenius-ai.git
+cd testgenius-ai
+
+# Install dependencies
+npm install
+
+# Build project
+npm run build
+
+# Run tests
+npm start run test all
+```
+
+## 🐛 Bug Reports & Feature Requests
+
+- **Bug Reports**: [Create an issue](https://github.com/hiroksarker/testgenius-ai/issues)
+- **Feature Requests**: [Start a discussion](https://github.com/hiroksarker/testgenius-ai/discussions)
+- **Security Issues**: Email [security@testgenius.ai](mailto:security@testgenius.ai)
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- **WebdriverIO Team** - For the excellent browser automation framework
+- **Allure Team** - For the comprehensive reporting solution
+- **Open Source Community** - For inspiration and contributions
+
+## 📞 Support
+
+- **Documentation**: [Wiki](WIKI_HOME.md)
+- **Issues**: [GitHub Issues](https://github.com/hiroksarker/testgenius-ai/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/hiroksarker/testgenius-ai/discussions)
+- **Email**: [support@testgenius.ai](mailto:support@testgenius.ai)
+
+## 🌟 Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=hiroksarker/testgenius-ai&type=Date)](https://star-history.com/#hiroksarker/testgenius-ai&Date)
+
+---
 
 **Made with ❤️ by Hirok Sarker**
 
