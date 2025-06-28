@@ -2,10 +2,10 @@ import { remote, Browser } from 'webdriverio';
 import fs from 'fs-extra';
 import path from 'path';
 import chalk from 'chalk';
-import moment from 'moment';
 import { AITestExecutor } from './AITestExecutor';
 import { TestSessionManager } from './TestSessionManager';
 import { ConfigManager } from './ConfigManager';
+import { Logger, LogLevel, LogConfig } from './Logger';
 import { 
   TestDefinition, 
   TestResult, 
@@ -24,28 +24,117 @@ export class TestRunner {
   private reportGenerator: ReportGenerator;
   private cleanupManager: CleanupManager;
   private browser: Browser | null = null;
-  private allureResultsDir: string = 'allure-results';
+  private logger: Logger;
+  private isInitialized: boolean = false;
 
-  constructor() {
+  constructor(loggingOptions?: Partial<LogConfig>) {
     this.configManager = new ConfigManager();
     this.sessionManager = new TestSessionManager();
     this.aiExecutor = new AITestExecutor();
     this.reportGenerator = new ReportGenerator();
     this.cleanupManager = new CleanupManager();
     
-    // Ensure Allure results directory exists
-    fs.ensureDirSync(this.allureResultsDir);
+    // Initialize logger with provided options or defaults
+    this.logger = new Logger(loggingOptions);
+  }
+
+  // Auto-setup method for QA-friendly initialization
+  async autoSetup(): Promise<void> {
+    if (this.isInitialized) return;
+
+    this.logger.info('🔧 Auto-setting up TestGenius...');
+
+    try {
+      // 1. Auto-create directories
+      await this.createDirectories();
+      
+      // 2. Auto-create minimal config if not exists
+      await this.createMinimalConfig();
+      
+      // 3. Auto-detect and validate dependencies
+      await this.validateDependencies();
+      
+      this.isInitialized = true;
+      this.logger.success('✅ TestGenius setup complete!');
+      this.logger.info('📁 Created: tests/, reports/, screenshots/');
+      this.logger.info('⚙️  Created: testgenius.config.js (if needed)');
+      
+    } catch (error) {
+      this.logger.error('❌ Auto-setup failed:', (error as Error).message);
+      throw error;
+    }
+  }
+
+  private async createDirectories(): Promise<void> {
+    const directories = ['tests', 'reports', 'screenshots'];
+    
+    for (const dir of directories) {
+      try {
+        await fs.ensureDir(dir);
+        this.logger.debug(`✅ Created directory: ${dir}/`);
+      } catch (error) {
+        this.logger.warn(`⚠️  Could not create ${dir}/ directory:`, (error as Error).message);
+      }
+    }
+  }
+
+  private async createMinimalConfig(): Promise<void> {
+    const configPath = path.join(process.cwd(), 'testgenius.config.js');
+    
+    if (await fs.pathExists(configPath)) {
+      this.logger.debug('✅ Config file already exists');
+      return;
+    }
+
+    const minimalConfig = `module.exports = {
+  browser: 'chrome',
+  headless: false,
+  timeout: 10000,
+  baseUrl: 'https://example.com',
+  screenshotOnFailure: true,
+  screenshotOnSuccess: false
+};`;
+
+    try {
+      await fs.writeFile(configPath, minimalConfig);
+      this.logger.info('⚙️  Created minimal testgenius.config.js');
+    } catch (error) {
+      this.logger.warn('⚠️  Could not create config file:', (error as Error).message);
+    }
+  }
+
+  private async validateDependencies(): Promise<void> {
+    try {
+      // Check if WebDriverIO is available
+      require('webdriverio');
+      this.logger.debug('✅ WebDriverIO dependency found');
+    } catch (error) {
+      this.logger.warn('⚠️  WebDriverIO not found. Please run: npm install webdriverio');
+    }
+
+    // Check if browser drivers are available
+    try {
+      require('chromedriver');
+      this.logger.debug('✅ ChromeDriver found');
+    } catch (error) {
+      this.logger.info('💡 ChromeDriver not found. Will use system browser.');
+    }
   }
 
   async run(testId: string, options: TestRunOptions = {}): Promise<TestSuiteResult> {
-    console.log(chalk.blue('🚀 Starting TestGenius Test Runner...\n'));
+    // Auto-setup if not initialized
+    if (!this.isInitialized) {
+      await this.autoSetup();
+    }
+
+    this.logger.info('🚀 Starting TestGenius Test Runner...');
 
     try {
       const config = await this.configManager.loadConfig();
       const tests = await this.findTests(testId, options, config);
 
       if (tests.length === 0) {
-        console.log(chalk.yellow('⚠️  No tests found matching the criteria.'));
+        this.logger.warn('⚠️  No tests found matching the criteria.');
         return {
           totalTests: 0,
           passed: 0,
@@ -57,7 +146,7 @@ export class TestRunner {
         };
       }
 
-      console.log(chalk.cyan(`📋 Found ${tests.length} test(s) to run\n`));
+      this.logger.info(`📋 Found ${tests.length} test(s) to run`);
 
       // Run tests
       const results: TestResult[] = [];
@@ -70,32 +159,19 @@ export class TestRunner {
 
       // Run each test
       for (const test of tests) {
-        console.log(chalk.cyan(`\n🎯 Running: ${test.id} - ${test.name}`));
-        console.log(chalk.gray(`📝 Description: ${test.description}`));
-        console.log(chalk.gray(`🌐 Site: ${test.site}`));
-        console.log(chalk.gray(`🏷️  Tags: ${test.tags?.join(', ') || 'none'}`));
-        console.log(chalk.gray(`⚡ Priority: ${test.priority}\n`));
+        this.logger.testStart(test.id, test.name);
+        this.logger.info(`📝 Description: ${test.description}`);
+        this.logger.info(`🌐 Site: ${test.site}`);
+        this.logger.info(`🏷️  Tags: ${test.tags?.join(', ') || 'none'}`);
+        this.logger.info(`⚡ Priority: ${test.priority}`);
 
         const startTime = Date.now();
         
         try {
-          // Start Allure test
-          this.startAllureTest(test);
-          
           // Execute test
           const result = await this.runSingleTest(test, options, config);
           const duration = Date.now() - startTime;
           totalDuration += duration;
-
-          // Add screenshots to Allure
-          if (result.screenshots && result.screenshots.length > 0) {
-            result.screenshots.forEach((screenshot, index) => {
-              this.addAllureScreenshot(`Screenshot ${index + 1}`, screenshot);
-            });
-          }
-
-          // End Allure test
-          this.endAllureTest(result.success ? 'passed' : 'failed', result.errors?.[0] ? new Error(result.errors[0]) : undefined);
 
           // Create test result
           const testResult: TestResult = {
@@ -116,28 +192,22 @@ export class TestRunner {
 
           if (result.success) {
             passedCount++;
-            console.log(chalk.green(`✅ Test ${test.id} completed successfully!`));
+            this.logger.testSuccess(test.id, duration);
           } else {
             failedCount++;
-            console.log(chalk.red(`❌ Test ${test.id} failed!`));
+            this.logger.testFailure(test.id, result.errors?.[0] || 'Unknown error', duration);
           }
-
-          console.log(chalk.gray(`⏱️  Duration: ${duration}ms`));
 
           // Save session data
           await this.sessionManager.saveSession(testResult);
-          console.log(chalk.gray(`📁 Session saved for test ${test.id}\n`));
+          this.logger.debug(`📁 Session saved for test ${test.id}`);
 
         } catch (error) {
           const duration = Date.now() - startTime;
           totalDuration += duration;
           failedCount++;
 
-          // End Allure test with error
-          this.endAllureTest('broken', error as Error);
-
-          console.log(chalk.red(`❌ Test ${test.id} failed with error: ${(error as Error).message}`));
-          console.log(chalk.gray(`⏱️  Duration: ${duration}ms\n`));
+          this.logger.testFailure(test.id, (error as Error).message, duration);
 
           results.push({
             id: test.id,
@@ -169,13 +239,13 @@ export class TestRunner {
       // Print summary
       this.printSummary(summary);
 
-      // Generate Allure report
-      await this.generateAllureReport();
+      // Generate simple HTML report
+      await this.generateSimpleReport(summary);
 
       return summary;
 
     } catch (error) {
-      console.error(chalk.red('❌ Test execution failed:'), (error as Error).message);
+      this.logger.error('❌ Test execution failed:', (error as Error).message);
       throw error;
     } finally {
       // Clean up browser
@@ -186,38 +256,48 @@ export class TestRunner {
     }
   }
 
-  private async findTests(testId: string, options: TestRunOptions, config: FrameworkConfig): Promise<TestDefinition[]> {
-    // Load tests from the compiled tests directory
-    const testsDir = path.join(process.cwd(), 'dist', 'tests');
-    const testFiles = await fs.readdir(testsDir);
+  private async findTests(testId: string, options: TestRunOptions, config: FrameworkConfig & { testsDir?: string }): Promise<TestDefinition[]> {
+    // Use config.testsDir if set, otherwise default to ['tests', 'src/tests']
+    const testDirs = config.testsDir ? [config.testsDir] : ['tests', 'src/tests'];
+    let tests: TestDefinition[] = [];
     
-    const tests: TestDefinition[] = [];
-    
-    for (const file of testFiles) {
-      if (file.endsWith('.js') && file !== 'run-internet-tests.js') {
+    for (const testDir of testDirs) {
+      const fullPath = path.join(process.cwd(), testDir);
+      
+      if (await fs.pathExists(fullPath)) {
         try {
-          const testModule = require(path.join(testsDir, file));
+          const testFiles = await fs.readdir(fullPath);
           
-          // Look for exported test definitions
-          Object.keys(testModule).forEach(key => {
-            const test = testModule[key];
-            if (test && typeof test === 'object' && test.id && test.name) {
-              // Filter by test ID if specified
-              if (testId === 'all' || test.id === testId || test.id.includes(testId)) {
-                // Filter by tag if specified
-                if (!options.tag || test.tags?.includes(options.tag)) {
-                  // Filter by priority if specified
-                  if (!options.priority || test.priority === options.priority) {
-                    tests.push(test);
-                  }
+          for (const file of testFiles) {
+            if (file.endsWith('.js') || file.endsWith('.ts')) {
+              try {
+                const testModule = require(path.join(fullPath, file));
+                const testDefinitions = testModule.default || testModule;
+                
+                if (Array.isArray(testDefinitions)) {
+                  tests = tests.concat(testDefinitions);
+                } else if (testDefinitions && typeof testDefinitions === 'object') {
+                  tests.push(testDefinitions);
                 }
+              } catch (error) {
+                this.logger.debug(`⚠️  Could not load test file ${file}:`, (error as Error).message);
               }
             }
-          });
+          }
+          
+          if (tests.length > 0) {
+            this.logger.info(`📁 Found tests in ${testDir}/ directory`);
+            break;
+          }
         } catch (error) {
-          console.warn(`Warning: Could not load test file ${file}: ${error}`);
+          this.logger.debug(`⚠️  Could not read ${testDir}/ directory:`, (error as Error).message);
         }
       }
+    }
+    
+    // Filter by testId if provided
+    if (testId && testId !== '*') {
+      tests = tests.filter(test => test.id === testId || test.name === testId);
     }
     
     return tests;
@@ -228,7 +308,7 @@ export class TestRunner {
     options: TestRunOptions, 
     config: FrameworkConfig
   ): Promise<TestResult> {
-    const sessionId = `${test.id}_${moment().format('YYYYMMDD_HHmmss')}`;
+    const sessionId = `${test.id}_${Date.now()}`;
     const sessionDir = path.join(process.cwd(), 'test-results', sessionId);
     
     await fs.ensureDir(sessionDir);
@@ -362,133 +442,132 @@ export class TestRunner {
     await fs.writeJson(sessionFile, result, { spaces: 2 });
   }
 
-  private startAllureTest(test: TestDefinition): void {
-    // Create Allure test metadata file
-    const testId = `testgenius-${test.id}-${Date.now()}`;
-    
-    // Process recorded steps for Allure
-    const recordedSteps = (test.testData as any)?.steps || [];
-    const allureSteps = Array.isArray(recordedSteps) ? recordedSteps.map((step: any, index: number) => ({
-      name: step.description,
-      status: 'passed',
-      stage: 'finished',
-      start: new Date(step.timestamp).getTime(),
-      stop: new Date(step.timestamp).getTime(),
-      parameters: [
-        { name: 'Action', value: step.action },
-        ...(step.target ? [{ name: 'Target', value: step.target }] : []),
-        ...(step.value ? [{ name: 'Value', value: step.value }] : [])
-      ]
-    })) : [];
-
-    const allureTest = {
-      name: test.name,
-      description: test.description,
-      fullName: `${test.id}: ${test.name}`,
-      status: 'passed',
-      stage: 'finished',
-      start: Date.now(),
-      stop: Date.now(),
-      labels: [
-        { name: 'testId', value: test.id },
-        { name: 'priority', value: test.priority },
-        { name: 'site', value: test.site },
-        { name: 'framework', value: 'TestGenius AI' },
-        { name: 'language', value: 'TypeScript' },
-        ...(test.tags?.map(tag => ({ name: 'tag', value: tag })) || [])
-      ],
-      parameters: test.testData ? Object.entries(test.testData)
-        .filter(([key]) => key !== 'steps') // Exclude steps from parameters
-        .map(([key, value]) => ({
-          name: key,
-          value: typeof value === 'object' ? JSON.stringify(value) : String(value)
-        })) : [],
-      steps: allureSteps,
-      attachments: []
-    };
-
-    const testFile = path.join(this.allureResultsDir, `${testId}-result.json`);
-    fs.writeJsonSync(testFile, allureTest);
-  }
-
-  private endAllureTest(status: 'passed' | 'failed' | 'broken', error?: Error): void {
-    // Update test result with status
-    const testFiles = fs.readdirSync(this.allureResultsDir).filter(f => f.endsWith('-result.json'));
-    if (testFiles.length > 0) {
-      const latestTestFile = path.join(this.allureResultsDir, testFiles[testFiles.length - 1]);
-      const testData = fs.readJsonSync(latestTestFile);
-      
-      testData.status = status;
-      testData.stage = 'finished';
-      testData.stop = Date.now();
-      
-      if (error) {
-        testData.statusDetails = {
-          message: error.message,
-          trace: error.stack
-        };
-      }
-      
-      fs.writeJsonSync(latestTestFile, testData);
-    }
-  }
-
-  private addAllureScreenshot(name: string, screenshotPath: string): void {
-    if (!fs.existsSync(screenshotPath)) return;
-
-    try {
-      const attachmentId = `screenshot-${Date.now()}`;
-      const attachmentFile = path.join(this.allureResultsDir, `${attachmentId}-attachment.json`);
-      
-      const attachment = {
-        name,
-        type: 'image/png',
-        source: fs.readFileSync(screenshotPath).toString('base64')
-      };
-      
-      fs.writeJsonSync(attachmentFile, attachment);
-    } catch (error) {
-      console.warn(`Failed to add Allure screenshot ${screenshotPath}:`, error);
-    }
-  }
-
-  private async generateAllureReport(): Promise<void> {
-    try {
-      console.log(chalk.blue('\n📊 Generating Allure report...'));
-      
-      const { execSync } = require('child_process');
-      execSync(`npx allure generate ${this.allureResultsDir} --clean --output allure-report`, {
-        stdio: 'inherit'
-      });
-      
-      console.log(chalk.green('✅ Allure report generated: allure-report/'));
-      console.log(chalk.blue('🌐 To open the report, run: npx allure open allure-report'));
-      
-    } catch (error) {
-      console.error(chalk.red('❌ Failed to generate Allure report:'), error);
-    }
-  }
-
   private printSummary(summary: TestSuiteResult): void {
     console.log(chalk.blue('\n📊 Test Execution Summary'));
-    console.log(chalk.blue('══════════════════════════════════════════════════'));
+    console.log(chalk.gray('─'.repeat(50)));
     console.log(chalk.white(`Total Tests: ${summary.totalTests}`));
-    console.log(chalk.green(`Passed: ${summary.passed}`));
-    console.log(chalk.red(`Failed: ${summary.failed}`));
-    console.log(chalk.white(`Total Duration: ${summary.totalDuration}ms`));
-    console.log(chalk.white(`Success Rate: ${summary.successRate.toFixed(1)}%`));
-    console.log(chalk.blue('══════════════════════════════════════════════════\n'));
+    console.log(chalk.green(`✅ Passed: ${summary.passed}`));
+    console.log(chalk.red(`❌ Failed: ${summary.failed}`));
+    console.log(chalk.blue(`⏱️  Total Duration: ${summary.totalDuration}ms`));
+    console.log(chalk.yellow(`📈 Success Rate: ${summary.successRate.toFixed(1)}%`));
+    console.log(chalk.gray('─'.repeat(50)));
+  }
 
-    if (summary.failed > 0) {
-      console.log(chalk.red('❌ Failed Tests:'));
-      summary.results
-        .filter(r => r.status === 'failed')
-        .forEach(result => {
-          console.log(chalk.red(`  - ${result.id}: ${result.errors?.[0] || 'Unknown error'}`));
-        });
-      console.log();
+  private async generateSimpleReport(summary: TestSuiteResult): Promise<void> {
+    try {
+      const reportDir = 'reports';
+      await fs.ensureDir(reportDir);
+      
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const reportFile = path.join(reportDir, `test-report-${timestamp}.html`);
+      
+      const htmlContent = this.generateHTMLReport(summary);
+      await fs.writeFile(reportFile, htmlContent);
+      
+      this.logger.success(`📊 HTML report generated: ${reportFile}`);
+      this.logger.info('🌐 Open the report in your browser to view detailed results');
+      
+    } catch (error) {
+      this.logger.warn('⚠️  Could not generate HTML report:', (error as Error).message);
     }
+  }
 
-    console.log(chalk.green('✅ Test execution completed!'));
+  private generateHTMLReport(summary: TestSuiteResult): string {
+    const passedColor = '#28a745';
+    const failedColor = '#dc3545';
+    const successRate = summary.successRate;
+    const statusColor = successRate >= 80 ? passedColor : successRate >= 60 ? '#ffc107' : failedColor;
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TestGenius Report - ${new Date().toLocaleDateString()}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f8f9fa; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; }
+        .card h3 { margin: 0 0 10px 0; color: #333; }
+        .card .number { font-size: 2em; font-weight: bold; }
+        .passed { color: ${passedColor}; }
+        .failed { color: ${failedColor}; }
+        .success-rate { color: ${statusColor}; }
+        .test-results { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .test-item { border-left: 4px solid #ddd; padding: 15px; margin: 10px 0; background: #f8f9fa; border-radius: 0 5px 5px 0; }
+        .test-item.passed { border-left-color: ${passedColor}; }
+        .test-item.failed { border-left-color: ${failedColor}; }
+        .test-name { font-weight: bold; margin-bottom: 5px; }
+        .test-duration { color: #666; font-size: 0.9em; }
+        .test-error { color: ${failedColor}; margin-top: 10px; font-family: monospace; background: #f8f9fa; padding: 10px; border-radius: 5px; }
+        .timestamp { color: #666; font-size: 0.9em; margin-top: 20px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧠 TestGenius AI Report</h1>
+        <p>Test execution completed on ${new Date().toLocaleString()}</p>
+    </div>
+    
+    <div class="summary">
+        <div class="card">
+            <h3>Total Tests</h3>
+            <div class="number">${summary.totalTests}</div>
+        </div>
+        <div class="card">
+            <h3>Passed</h3>
+            <div class="number passed">${summary.passed}</div>
+        </div>
+        <div class="card">
+            <h3>Failed</h3>
+            <div class="number failed">${summary.failed}</div>
+        </div>
+        <div class="card">
+            <h3>Success Rate</h3>
+            <div class="number success-rate">${summary.successRate.toFixed(1)}%</div>
+        </div>
+        <div class="card">
+            <h3>Duration</h3>
+            <div class="number">${summary.totalDuration}ms</div>
+        </div>
+    </div>
+    
+    <div class="test-results">
+        <h2>Test Results</h2>
+        ${summary.results.map(result => `
+            <div class="test-item ${result.success ? 'passed' : 'failed'}">
+                <div class="test-name">${result.testId}</div>
+                <div class="test-duration">Duration: ${result.duration}ms | Status: ${result.status}</div>
+                ${result.errors && result.errors.length > 0 ? `
+                    <div class="test-error">
+                        <strong>Error:</strong> ${result.errors[0]}
+                    </div>
+                ` : ''}
+            </div>
+        `).join('')}
+    </div>
+    
+    <div class="timestamp">
+        Generated by TestGenius AI on ${new Date().toLocaleString()}
+    </div>
+</body>
+</html>`;
+  }
+
+  getLogger(): Logger {
+    return this.logger;
+  }
+
+  updateLoggingConfig(config: Partial<LogConfig>): void {
+    this.logger.updateConfig(config);
+  }
+
+  async getLogFiles(): Promise<string[]> {
+    return this.logger.getLogFiles();
+  }
+
+  async clearLogs(): Promise<void> {
+    return this.logger.clearLogs();
   }
 } 

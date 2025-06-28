@@ -260,6 +260,13 @@ npm start run test all --env staging
 npm start run test all --env production
 ```
 
+### Node.js
+
+```bash
+# Run internet tests using Node.js
+node tests/run-internet-tests.js
+```
+
 ---
 
 ## 🤖 AI Features

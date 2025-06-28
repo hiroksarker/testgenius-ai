@@ -6,20 +6,45 @@ export class TestLister {
   constructor() {}
 
   async list(options: { tag?: string; priority?: string } = {}): Promise<void> {
-    const testsDir = path.join(process.cwd(), 'dist', 'tests');
-    if (!(await fs.pathExists(testsDir))) {
-      console.log('No tests directory found.');
-      return;
-    }
-    const files = await fs.readdir(testsDir);
+    // Use tests/ and src/tests/ directories instead of dist/tests/
+    const testDirs = ['tests', 'src/tests'];
     let allTests: TestDefinition[] = [];
-    for (const file of files) {
-      if (file.endsWith('.js')) {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const testModule = require(path.join(testsDir, file));
-        allTests.push(...(Object.values(testModule) as TestDefinition[]));
+    
+    for (const testDir of testDirs) {
+      const fullPath = path.join(process.cwd(), testDir);
+      
+      if (await fs.pathExists(fullPath)) {
+        try {
+          const files = await fs.readdir(fullPath);
+          
+          for (const file of files) {
+            if (file.endsWith('.js') || file.endsWith('.ts')) {
+              try {
+                // eslint-disable-next-line @typescript-eslint/no-var-requires
+                const testModule = require(path.join(fullPath, file));
+                const testDefinitions = testModule.default || testModule;
+                
+                if (Array.isArray(testDefinitions)) {
+                  allTests = allTests.concat(testDefinitions);
+                } else if (testDefinitions && typeof testDefinitions === 'object') {
+                  // Handle both single test objects and modules with multiple exports
+                  if (testDefinitions.id) {
+                    allTests.push(testDefinitions);
+                  } else {
+                    allTests.push(...(Object.values(testDefinitions) as TestDefinition[]));
+                  }
+                }
+              } catch (error) {
+                console.warn(`Could not load test file ${file}:`, (error as Error).message);
+              }
+            }
+          }
+        } catch (error) {
+          console.warn(`Could not read ${testDir}/ directory:`, (error as Error).message);
+        }
       }
     }
+    
     if (options.tag) {
       allTests = allTests.filter(t => t.tags && t.tags.includes(options.tag!));
     }

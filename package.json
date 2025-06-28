@@ -1,7 +1,7 @@
 {
   "name": "testgenius-ai",
   "version": "1.0.3",
-  "description": "AI-Powered E2E Testing Framework with WebdriverIO - Record, generate, and execute comprehensive test scenarios with intelligent automation",
+  "description": "🧠 TestGenius AI - Simple E2E Testing Framework for QA Engineers",
   "main": "dist/bin/testgenius.js",
   "bin": {
     "testgenius": "dist/bin/testgenius.js"
@@ -27,10 +27,6 @@
     "lint": "eslint src/**/*.ts",
     "clean": "rm -rf dist",
     "setup:env": "bash setup-env.sh",
-    "allure:generate": "allure generate allure-results --clean -o allure-report",
-    "allure:open": "allure open allure-report",
-    "allure:serve": "allure serve allure-results",
-    "allure:clean": "rm -rf allure-results allure-report",
     "prepublishOnly": "npm run build && npm test",
     "prepack": "npm run build"
   },
@@ -40,7 +36,6 @@
     "ai-testing",
     "automation",
     "typescript",
-    "allure",
     "bdd",
     "test-automation",
     "selenium",
@@ -54,7 +49,10 @@
     "firefox-automation",
     "safari-automation",
     "edge-automation",
-    "test-reporting"
+    "test-reporting",
+    "qa-friendly",
+    "simple-testing",
+    "minimal-setup"
   ],
   "author": "Hirok Sarker <hirok.sarker@gmail.com>",
   "license": "MIT",
@@ -78,7 +76,6 @@
   },
   "dependencies": {
     "@langchain/openai": "^0.5.16",
-    "allure-commandline": "^2.24.1",
     "chalk": "^4.1.2",
     "commander": "^11.1.0",
     "devtools": "^8.42.0",
@@ -87,7 +84,7 @@
     "glob": "^10.3.10",
     "inquirer": "^8.2.6",
     "langchain": "^0.3.29",
-    "moment": "^2.30.1",
+    "open": "^10.1.2",
     "openai": "^5.8.2",
     "webdriverio": "^8.32.5"
   },
