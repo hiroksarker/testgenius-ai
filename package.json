@@ -1,6 +1,6 @@
 {
   "name": "testgenius-ai",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "🚀 TestGenius AI - The Ultimate E2E Testing Framework for Everyone | No Coding Required • AI-Powered Automation • Beautiful Reports • Zero Complexity",
   "main": "dist/bin/testgenius.js",
   "bin": {
