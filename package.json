@@ -23,7 +23,7 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "start": "node dist/bin/testgenius.js",
-    "test": "jest",
+    "test": "echo 'No Jest tests configured - use testgenius CLI for testing'",
     "lint": "eslint src/**/*.ts",
     "clean": "rm -rf dist",
     "setup:env": "bash setup-env.sh",
@@ -66,6 +66,10 @@
     "url": "https://github.com/hiroksarker/testgenius-ai/issues"
   },
   "homepage": "https://github.com/hiroksarker/testgenius-ai#readme",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/hiroksarker"
+  },
   "support": {
     "email": "support@testgenius.ai",
     "issues": "https://github.com/hiroksarker/testgenius-ai/issues",
@@ -102,28 +106,6 @@
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=9.0.0"
-  },
-  "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "node",
-    "testMatch": [
-      "**/src/tests/**/*.test.ts",
-      "**/src/tests/**/*.spec.ts",
-      "**/tests/**/*.test.js",
-      "**/tests/**/*.spec.js"
-    ],
-    "transform": {
-      "^.+\\.ts$": "ts-jest"
-    },
-    "moduleFileExtensions": [
-      "ts",
-      "js",
-      "json"
-    ],
-    "collectCoverageFrom": [
-      "src/**/*.ts",
-      "!src/**/*.d.ts"
-    ]
   },
   "os": [
     "darwin",

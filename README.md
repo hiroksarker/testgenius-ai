@@ -1,5 +1,18 @@
 # 🤖 TestGenius AI - Intelligent E2E Testing Framework
 
+[![npm version](https://img.shields.io/npm/v/testgenius-ai.svg)](https://www.npmjs.com/package/testgenius-ai)
+[![npm downloads](https://img.shields.io/npm/dm/testgenius-ai.svg)](https://www.npmjs.com/package/testgenius-ai)
+[![GitHub stars](https://img.shields.io/github/stars/hiroksarker/testgenius-ai.svg)](https://github.com/hiroksarker/testgenius-ai/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/hiroksarker/testgenius-ai.svg)](https://github.com/hiroksarker/testgenius-ai/network)
+[![GitHub issues](https://img.shields.io/github/issues/hiroksarker/testgenius-ai.svg)](https://github.com/hiroksarker/testgenius-ai/issues)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![WebdriverIO](https://img.shields.io/badge/WebdriverIO-4.0.0+-green.svg)](https://webdriver.io/)
+[![Node.js](https://img.shields.io/badge/Node.js-18.0.0+-green.svg)](https://nodejs.org/)
+[![Allure](https://img.shields.io/badge/Allure-Reporting-blue.svg)](https://docs.qameta.io/allure/)
+[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](CONTRIBUTING.md)
+[![Code of Conduct](https://img.shields.io/badge/code%20of%20conduct-1.0.0-ff69b4.svg)](CODE_OF_CONDUCT.md)
+
 > **⚠️ IMPORTANT FOR ALL USERS (QA, DEV, LEARNERS):**
 >
 > TestGenius AI will **NOT** work without an OpenAI API key.  
@@ -15,16 +28,6 @@
 > 1. Get your OpenAI API key from https://platform.openai.com/api-keys  
 > 2. Add it to your `.env` file as `OPENAI_API_KEY=...`  
 > 3. Now you can record, run, and analyze tests with AI power!
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![WebdriverIO](https://img.shields.io/badge/WebdriverIO-4.0.0+-green.svg)](https://webdriver.io/)
-[![Node.js](https://img.shields.io/badge/Node.js-18.0.0+-green.svg)](https://nodejs.org/)
-[![Allure](https://img.shields.io/badge/Allure-Reporting-blue.svg)](https://docs.qameta.io/allure/)
-[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](CONTRIBUTING.md)
-[![Code of Conduct](https://img.shields.io/badge/code%20of%20conduct-1.0.0-ff69b4.svg)](CODE_OF_CONDUCT.md)
-[![npm version](https://img.shields.io/npm/v/testgenius-ai.svg)](https://www.npmjs.com/package/testgenius-ai)
-[![npm downloads](https://img.shields.io/npm/dm/testgenius-ai.svg)](https://www.npmjs.com/package/testgenius-ai)
 
 > **🚀 Open Source AI-Powered End-to-End Testing Framework**
 
@@ -160,106 +163,18 @@ testgenius allure:open
 
 ### Basic Test Recording
 
-```bash
-# Start recording
-testgenius record
-
-# Follow the prompts to record your test
-# The framework will guide you through each step
 ```
 
-### BDD Test Scenario
+**Made with ❤️ by Hirok Sarker**
 
-```gherkin
-Feature: Login Functionality
+[![GitHub contributors](https://img.shields.io/github/contributors/hiroksarker/testgenius-ai)](https://github.com/hiroksarker/testgenius-ai/graphs/contributors)
+[![GitHub stars](https://img.shields.io/github/stars/hiroksarker/testgenius-ai)](https://github.com/hiroksarker/testgenius-ai/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/hiroksarker/testgenius-ai)](https://github.com/hiroksarker/testgenius-ai/network)
+[![GitHub issues](https://img.shields.io/github/issues/hiroksarker/testgenius-ai)](https://github.com/hiroksarker/testgenius-ai/issues)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/hiroksarker/testgenius-ai)](https://github.com/hiroksarker/testgenius-ai/pulls)
 
-Background:
-  Given I am on the login page
+## 🏷️ GitHub Topics
 
-Scenario: Successful Login
-  When I enter valid credentials
-  And I click the login button
-  Then I should be logged in successfully
-  And I should see the dashboard
-```
+This repository uses the following topics for better discoverability:
 
-### Programmatic Test
-
-```typescript
-const testDefinition = {
-  id: 'login-test',
-  name: 'User Login Test',
-  steps: [
-    {
-      action: 'navigate',
-      target: 'https://the-internet.herokuapp.com/login',
-      value: null
-    },
-    {
-      action: 'fill',
-      target: '#username',
-      value: 'tomsmith'
-    },
-    {
-      action: 'fill',
-      target: '#password',
-      value: 'SuperSecretPassword!'
-    },
-    {
-      action: 'click',
-      target: 'button[type="submit"]',
-      value: null
-    },
-    {
-      action: 'verify',
-      target: '.flash.success',
-      value: 'You logged into a secure area!'
-    }
-  ]
-};
-```
-
-## 🔧 Configuration
-
-### Environment Variables
-
-```bash
-# Copy example environment file
-cp env.example .env
-
-# Configure your environment
-TEST_BASE_URL=https://your-app.com
-TEST_TIMEOUT=30000
-BROWSER_NAME=chrome
-HEADLESS_MODE=true
-```
-
-### WebdriverIO Configuration
-
-```javascript
-// testgenius.config.js
-module.exports = {
-  runner: 'local',
-  specs: ['./src/tests/**/*.js'],
-  maxInstances: 1,
-  capabilities: [{
-    browserName: 'chrome',
-    'goog:chromeOptions': {
-      args: ['--headless', '--no-sandbox']
-    }
-  }],
-  logLevel: 'info',
-  bail: 0,
-  baseUrl: 'https://the-internet.herokuapp.com',
-  waitforTimeout: 10000,
-  connectionRetryTimeout: 120000,
-  connectionRetryCount: 3,
-  services: ['chromedriver'],
-  framework: 'mocha',
-  reporters: ['spec', ['allure', {
-    outputDir: 'allure-results',
-    disableWebdriverStepsReporting: true,
-    disableWebdriverScreenshotsReporting: false
-  }]]
-};
-```
+`e2e-testing` `webdriverio` `ai-testing` `automation` `typescript` `allure` `bdd` `test-automation` `selenium` `browser-testing` `test-recorder` `smart-testing` `ai-powered` `end-to-end` `testing-framework` `chrome-automation` `firefox-automation` `safari-automation` `edge-automation` `test-reporting`
