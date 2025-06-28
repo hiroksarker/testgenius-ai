@@ -113,5 +113,12 @@
     "x64",
     "arm64"
   ],
-  "man": "./docs/man/testgenius.1"
+  "man": "./docs/man/testgenius.1",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "dist-tags": {
+    "latest": "1.0.9"
+  }
 }

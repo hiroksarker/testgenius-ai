@@ -52,7 +52,17 @@ testgenius report
 
 ### 1️⃣ **Install**
 ```bash
+# Install latest version
 npm install -g testgenius-ai
+
+# Or explicitly install latest
+npm install -g testgenius-ai@latest
+
+# Check current version
+testgenius --version
+
+# Update to latest version
+npm update -g testgenius-ai
 ```
 
 ### 2️⃣ **Initialize**
@@ -67,6 +77,39 @@ testgenius record    # Record a new test
 testgenius run       # Run all tests
 testgenius report    # View results
 ```
+
+---
+
+## 📦 Version Management
+
+### 🔄 **Always Get the Latest Version**
+TestGenius AI automatically provides the latest version when you install:
+
+```bash
+# Install latest version (recommended)
+npm install -g testgenius-ai
+
+# Explicitly install latest
+npm install -g testgenius-ai@latest
+
+# Update existing installation
+npm update -g testgenius-ai
+```
+
+### 📋 **Check Your Version**
+```bash
+# Check current version
+testgenius --version
+
+# Check version and look for updates
+testgenius version
+```
+
+### 🎯 **Version Features**
+- **Automatic Updates**: npm always installs the latest version by default
+- **Version Checking**: Built-in command to check for updates
+- **Backward Compatibility**: New versions maintain compatibility with existing tests
+- **Release Notes**: Check [GitHub releases](https://github.com/hiroksarker/testgenius-ai/releases) for detailed changes
 
 ---
 

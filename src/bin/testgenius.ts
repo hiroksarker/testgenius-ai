@@ -14,7 +14,7 @@ const program = new Command();
 program
   .name('testgenius')
   .description('🚀 TestGenius AI - The Ultimate E2E Testing Framework for Everyone')
-  .version('1.0.6');
+  .version('1.0.9');
 
 // Initialize project (QA-friendly)
 program
@@ -201,6 +201,37 @@ program
     }
   });
 
+// Version check command
+program
+  .command('version')
+  .description('📋 Show current version and check for updates')
+  .action(async () => {
+    try {
+      const currentVersion = '1.0.9';
+      console.log(chalk.blue('🧠 TestGenius AI'));
+      console.log(chalk.green(`✅ Current Version: ${currentVersion}`));
+      
+      // Check for updates
+      console.log(chalk.yellow('🔍 Checking for updates...'));
+      try {
+        const { execSync } = require('child_process');
+        const latestVersion = execSync('npm view testgenius-ai version', { encoding: 'utf8' }).trim();
+        
+        if (latestVersion === currentVersion) {
+          console.log(chalk.green('✅ You have the latest version!'));
+        } else {
+          console.log(chalk.yellow(`🔄 New version available: ${latestVersion}`));
+          console.log(chalk.blue('💡 Run "npm update -g testgenius-ai" to update'));
+        }
+      } catch (error) {
+        console.log(chalk.gray('⚠️  Could not check for updates (network issue)'));
+      }
+      
+    } catch (error) {
+      console.error(chalk.red('❌ Version check failed:'), (error as Error).message);
+    }
+  });
+
 // Help command
 program
   .command('help')
@@ -214,6 +245,7 @@ program
     console.log(chalk.yellow('  testgenius run      - Run all tests'));
     console.log(chalk.yellow('  testgenius list     - List all available tests'));
     console.log(chalk.yellow('  testgenius report   - View test results'));
+    console.log(chalk.yellow('  testgenius version  - Check current version and updates'));
     console.log(chalk.gray('─'.repeat(50)));
     console.log(chalk.white('Run Command Examples:'));
     console.log(chalk.gray('  testgenius run                    - Run all tests'));
@@ -226,6 +258,10 @@ program
     console.log(chalk.gray('  testgenius run --exclude auth.js  - Exclude specific files'));
     console.log(chalk.gray('  testgenius run --headless         - Run tests in headless mode'));
     console.log(chalk.gray('  testgenius run --browser firefox  - Run with Firefox'));
+    console.log(chalk.gray('─'.repeat(50)));
+    console.log(chalk.white('Update Commands:'));
+    console.log(chalk.gray('  npm update -g testgenius-ai       - Update to latest version'));
+    console.log(chalk.gray('  npm install -g testgenius-ai@latest - Install latest version'));
     console.log(chalk.gray('─'.repeat(50)));
     console.log(chalk.white('For more information:'));
     console.log(chalk.blue('  https://github.com/hiroksarker/testgenius-ai'));
