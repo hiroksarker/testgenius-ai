@@ -12,7 +12,7 @@
 
 *No coding required • AI-powered automation • Beautiful reports • Zero complexity*
 
-[![npm install](https://img.shields.io/badge/npm%20install--g%20@hiroksarker/testgenius--ai-brightgreen?style=for-the-badge&logo=npm)](https://github.com/hiroksarker/testgenius-ai/packages)
+[![npm install](https://img.shields.io/badge/npm%20install--g%20testgenius--ai-brightgreen?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/testgenius-ai)
 
 </div>
 
@@ -52,7 +52,7 @@ testgenius report
 
 ### 1️⃣ **Install**
 ```bash
-npm install -g @hiroksarker/testgenius-ai
+npm install -g testgenius-ai
 ```
 
 ### 2️⃣ **Initialize**
