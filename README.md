@@ -30,27 +30,20 @@
 
 ## 🎬 See It In Action
 
-<div align="center">
-
 ### 📋 List Your Tests
 ```bash
 testgenius list
 ```
-![Test Listing](https://via.placeholder.com/600x200/4CAF50/FFFFFF?text=📋+List+All+Tests)
 
 ### 🚀 Run Tests
 ```bash
 testgenius run AUTH-001
 ```
-![Test Running](https://via.placeholder.com/600x200/2196F3/FFFFFF?text=🚀+Run+Tests+with+AI)
 
 ### 📊 View Reports
 ```bash
 testgenius report
 ```
-![Test Reports](https://via.placeholder.com/600x200/FF9800/FFFFFF?text=📊+Beautiful+HTML+Reports)
-
-</div>
 
 ---
 
