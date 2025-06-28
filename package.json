@@ -1,6 +1,6 @@
 {
   "name": "testgenius-ai",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "🧠 TestGenius AI - Simple E2E Testing Framework for QA Engineers",
   "main": "dist/bin/testgenius.js",
   "bin": {
