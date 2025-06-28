@@ -1,6 +1,20 @@
 # 🤖 TestGenius AI - Intelligent E2E Testing Framework
 
-> **🚨 MUST READ: TestGenius AI requires an OpenAI API key. AI-powered execution is not optional—it's the core of the framework. For learning, research, or professional use, understanding and enabling AI integration is a must!**
+> **⚠️ IMPORTANT FOR ALL USERS (QA, DEV, LEARNERS):**
+>
+> TestGenius AI will **NOT** work without an OpenAI API key.  
+> All test execution, recording, and reporting features depend on AI.  
+> **You must set up your OpenAI API key before using this framework.**
+>
+> This is essential for:
+> - QA automation
+> - Learning and experimentation
+> - Professional or research use
+>
+> 👉 **Action Required:**  
+> 1. Get your OpenAI API key from https://platform.openai.com/api-keys  
+> 2. Add it to your `.env` file as `OPENAI_API_KEY=...`  
+> 3. Now you can record, run, and analyze tests with AI power!
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
