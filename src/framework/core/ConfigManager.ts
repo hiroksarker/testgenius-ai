@@ -42,6 +42,7 @@ export class ConfigManager {
         retryAttempts: 3
       },
       webdriverio: {
+        automationProtocol: 'devtools',
         capabilities: {
           browserName: 'chrome',
           'goog:chromeOptions': {
@@ -49,8 +50,10 @@ export class ConfigManager {
           }
         },
         logLevel: 'info',
-        timeout: 10000,
-        waitforTimeout: 10000
+        timeout: 30000,
+        waitforTimeout: 10000,
+        connectionRetryCount: 3,
+        connectionRetryTimeout: 120000
       },
       browser: {
         defaultBrowser: 'chrome',

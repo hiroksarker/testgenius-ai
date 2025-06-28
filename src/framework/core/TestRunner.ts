@@ -455,8 +455,16 @@ export class TestRunner {
     options: TestRunOptions, 
     config: FrameworkConfig
   ): Promise<void> {
+    // Use default values if config is undefined or incomplete
+    const defaultBrowser = config?.browser?.defaultBrowser || 'chrome';
+    const defaultLogLevel = config?.webdriverio?.logLevel || 'info';
+    const defaultTimeout = config?.webdriverio?.timeout || 30000;
+    const defaultWaitforTimeout = config?.webdriverio?.waitforTimeout || 10000;
+    const defaultConnectionRetryCount = config?.webdriverio?.connectionRetryCount || 3;
+    const defaultConnectionRetryTimeout = config?.webdriverio?.connectionRetryTimeout || 120000;
+
     const capabilities: any = {
-      browserName: options.browser || config.browser.defaultBrowser,
+      browserName: options.browser || defaultBrowser,
       'goog:chromeOptions': {
         args: [
           '--no-sandbox',
@@ -485,11 +493,11 @@ export class TestRunner {
     const wdioOptions = {
       automationProtocol: 'devtools' as const,
       capabilities,
-      logLevel: config.webdriverio.logLevel as any,
-      timeout: config.webdriverio.timeout,
-      waitforTimeout: config.webdriverio.waitforTimeout,
-      connectionRetryCount: config.webdriverio.connectionRetryCount || 3,
-      connectionRetryTimeout: config.webdriverio.connectionRetryTimeout || 120000
+      logLevel: defaultLogLevel as any,
+      timeout: defaultTimeout,
+      waitforTimeout: defaultWaitforTimeout,
+      connectionRetryCount: defaultConnectionRetryCount,
+      connectionRetryTimeout: defaultConnectionRetryTimeout
     };
 
     console.log(chalk.blue('🌐 Initializing browser with direct automation...'));

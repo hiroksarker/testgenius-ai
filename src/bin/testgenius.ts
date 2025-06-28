@@ -7,6 +7,14 @@ import { TestRecorder } from '../framework/core/TestRecorder';
 import { TestLister } from '../framework/core/TestLister';
 import { ProjectInitializer } from '../framework/core/ProjectInitializer';
 import { Logger, LogLevel } from '../framework/core/Logger';
+import { readFileSync } from 'fs';
+import path from 'path';
+
+// Dynamically get version from package.json
+const pkg = JSON.parse(
+  readFileSync(path.join(process.cwd(), 'package.json'), 'utf-8')
+);
+const version = pkg.version;
 
 const program = new Command();
 
@@ -14,7 +22,7 @@ const program = new Command();
 program
   .name('testgenius')
   .description('🚀 TestGenius AI - The Ultimate E2E Testing Framework for Everyone')
-  .version('1.0.9');
+  .version(version);
 
 // Initialize project (QA-friendly)
 program
@@ -207,7 +215,7 @@ program
   .description('📋 Show current version and check for updates')
   .action(async () => {
     try {
-      const currentVersion = '1.0.9';
+      const currentVersion = version;
       console.log(chalk.blue('🧠 TestGenius AI'));
       console.log(chalk.green(`✅ Current Version: ${currentVersion}`));
       
