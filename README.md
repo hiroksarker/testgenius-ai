@@ -355,6 +355,40 @@ testgenius report --allure --serve 8080
 
 > ℹ️ Allure is optional. If not enabled, TestGenius will generate simple HTML reports by default.
 
+### 💰 **Cost Tracking & Optimization (New!)**
+Monitor and optimize your AI testing costs with built-in cost tracking features.
+
+**Enable cost tracking:**
+```bash
+# Enable cost tracking
+testgenius cost --enable
+
+# Set budget limits
+testgenius cost --budget 10.0
+testgenius cost --monthly-budget 100.0
+```
+
+**View cost analysis:**
+```bash
+# Generate cost report
+testgenius report --cost
+
+# Get optimization recommendations
+testgenius report --optimization
+
+# Analyze current costs
+testgenius cost --analyze
+```
+
+**Features:**
+- 📊 **Real-time cost tracking** for OpenAI API usage
+- 💡 **Cost optimization recommendations** 
+- 🚨 **Budget alerts** and limits
+- 📈 **Cost trends** and historical data
+- 🎯 **Allure integration** with cost widgets
+
+> 📖 See [Cost Tracking Guide](COST_TRACKING_GUIDE.md) for detailed usage instructions.
+
 ### 🔧 **Flexible Configuration**
 ```javascript
 // testgenius.config.js

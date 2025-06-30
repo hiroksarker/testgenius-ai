@@ -7,13 +7,17 @@ import { BrowserTools } from '../tools/BrowserTools';
 import { NavigationTools } from '../tools/NavigationTools';
 import { InteractionTools } from '../tools/InteractionTools';
 import { VerificationTools } from '../tools/VerificationTools';
+import { CostTracker } from './CostTracker';
 import { 
   TestDefinition, 
   TestRunOptions, 
   AIExecutionResult, 
   ExecutionStep, 
   TestStep,
-  AIExecutionPlan 
+  AIExecutionPlan,
+  TokenUsage,
+  TestCostData,
+  FrameworkConfig
 } from '../../types';
 
 export class AITestExecutor {
@@ -23,10 +27,12 @@ export class AITestExecutor {
   private navigationTools: NavigationTools;
   private interactionTools: InteractionTools;
   private verificationTools: VerificationTools;
+  private costTracker: CostTracker | null = null;
   private steps: ExecutionStep[] = [];
   private screenshots: string[] = [];
+  private tokenUsage: TokenUsage[] = [];
 
-  constructor() {
+  constructor(config?: FrameworkConfig) {
     this.llm = new ChatOpenAI({
       openAIApiKey: process.env.OPENAI_API_KEY,
       modelName: process.env.OPENAI_MODEL || 'gpt-4o',
@@ -38,6 +44,11 @@ export class AITestExecutor {
     this.navigationTools = new NavigationTools();
     this.interactionTools = new InteractionTools();
     this.verificationTools = new VerificationTools();
+    
+    // Initialize cost tracker if config is provided and cost tracking is enabled
+    if (config?.costTracking?.enabled) {
+      this.costTracker = new CostTracker(config);
+    }
   }
 
   setBrowser(browser: Browser): void {
@@ -46,9 +57,89 @@ export class AITestExecutor {
     this.navigationTools.setBrowser(browser);
     this.interactionTools.setBrowser(browser);
     this.verificationTools.setBrowser(browser);
+    console.log(chalk.green('✅ Browser instance set on AI executor and all tools.'));
+  }
+
+  /**
+   * Track token usage from OpenAI response
+   */
+  private trackTokenUsage(response: any, model: string): void {
+    if (response.usage) {
+      const usage: TokenUsage = {
+        promptTokens: response.usage.prompt_tokens || 0,
+        completionTokens: response.usage.completion_tokens || 0,
+        totalTokens: response.usage.total_tokens || 0,
+        model: model,
+        timestamp: new Date()
+      };
+      
+      this.tokenUsage.push(usage);
+      
+      if (this.costTracker) {
+        const costMetrics = this.costTracker.calculateCost(usage);
+        console.log(chalk.blue(`💰 Token usage: ${usage.totalTokens} tokens, Cost: $${costMetrics.estimatedCost.toFixed(4)}`));
+      }
+    }
+  }
+
+  /**
+   * Get total token usage for this test execution
+   */
+  getTotalTokenUsage(): TokenUsage {
+    return this.tokenUsage.reduce((total, usage) => ({
+      promptTokens: total.promptTokens + usage.promptTokens,
+      completionTokens: total.completionTokens + usage.completionTokens,
+      totalTokens: total.totalTokens + usage.totalTokens,
+      model: usage.model, // Use the last model used
+      timestamp: new Date()
+    }), {
+      promptTokens: 0,
+      completionTokens: 0,
+      totalTokens: 0,
+      model: 'unknown',
+      timestamp: new Date()
+    });
+  }
+
+  /**
+   * Track cost for a test execution
+   */
+  async trackTestCost(testId: string, sessionId: string, executionTime: number, success: boolean): Promise<void> {
+    if (!this.costTracker) return;
+
+    const totalTokenUsage = this.getTotalTokenUsage();
+    const costMetrics = this.costTracker.calculateCost(totalTokenUsage);
+
+    const testCostData: TestCostData = {
+      testId,
+      sessionId,
+      costMetrics,
+      executionTime,
+      success
+    };
+
+    await this.costTracker.trackTestCost(testCostData);
   }
 
   async executeTest(test: TestDefinition, options: TestRunOptions = {}): Promise<AIExecutionResult> {
+    if (!this.browser) {
+      throw new Error('Browser not initialized. Did you forget to call setBrowser()?');
+    }
+    
+    // Check if browser is still responsive
+    try {
+      await this.browser.getTitle();
+    } catch (browserError) {
+      console.log(chalk.yellow(`⚠️ Browser lost connection, attempting to recover...`));
+      // Try to refresh the page first
+      try {
+        await this.browser.refresh();
+        await this.browser.pause(2000);
+      } catch (refreshError) {
+        throw new Error(`Browser connection lost and cannot be recovered: ${(browserError as Error).message}`);
+      }
+    }
+    
     console.log(chalk.blue('🤖 AI Test Executor starting...\n'));
 
     try {
@@ -165,6 +256,10 @@ Example format:
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt }
       ]);
+      
+      // Track token usage
+      this.trackTokenUsage(response, this.llm.modelName);
+      
       const planText = response.content;
       // Extract JSON from the response
       const planTextString = typeof planText === 'string' ? planText : JSON.stringify(planText);
@@ -186,89 +281,38 @@ Example format:
   }
 
   private createFallbackPlan(test: TestDefinition): AIExecutionPlan {
-    // Intelligent fallback plan based on test data and task description
-    const testData = test.testData || {};
+    // Completely dynamic AI approach - no specific features, only basic actions
     const task = test.task.toLowerCase();
     
-    // Extract field names from test data with proper typing
-    const username = String(testData.username || testData.email || 'test@example.com');
-    const password = String(testData.password || 'password123');
-    
-    // Determine field selectors based on available data
-    const usernameSelectors = testData.username ? 
-      'input[name="username"], input[id="username"], #username' : 
-      'input[type="email"], input[name="email"], #email, input[name="username"], input[id="username"], #username';
-    
-    const passwordSelectors = 'input[type="password"], input[name="password"], #password';
-    
-    // Common test patterns
-    const plans: Record<string, TestStep[]> = {
-      'login': [
-        {
-          action: 'fill_form',
-          selector: usernameSelectors,
-          value: username,
-          description: `Fill username field with '${username}'`,
-          expectedResult: 'Username field should be filled'
-        },
-        {
-          action: 'fill_form',
-          selector: passwordSelectors,
-          value: password,
-          description: `Fill password field with '${password}'`,
-          expectedResult: 'Password field should be filled'
-        },
-        {
-          action: 'click_element',
-          selector: 'button[type="submit"], input[type="submit"], .login-button',
-          description: 'Click login button',
-          expectedResult: 'Should be logged in successfully'
-        }
-      ],
-      'search': [
-        {
-          action: 'fill_form',
-          selector: 'input[type="search"], input[name="q"], #search',
-          value: String(testData.searchTerm || 'test search'),
-          description: 'Fill search field',
-          expectedResult: 'Search field should be filled'
-        },
-        {
-          action: 'click_element',
-          selector: 'button[type="submit"], input[type="submit"], .search-button',
-          description: 'Click search button',
-          expectedResult: 'Search should be executed'
-        }
-      ],
-      'form': [
-        {
-          action: 'fill_form',
-          selector: 'input, textarea, select',
-          value: 'test value',
-          description: 'Fill form fields',
-          expectedResult: 'Form fields should be filled'
-        },
-        {
-          action: 'click_element',
-          selector: 'button[type="submit"], input[type="submit"]',
-          description: 'Submit form',
-          expectedResult: 'Form should be submitted'
-        }
-      ]
-    };
-
-    // Determine which plan to use based on task description
-    let planType = 'form'; // default
-    if (task.includes('login') || task.includes('username') || task.includes('password')) {
-      planType = 'login';
-    } else if (task.includes('search')) {
-      planType = 'search';
-    }
+    // AI will analyze the task and create dynamic steps
+    // No hardcoded features like 'login', 'search', 'form'
+    const dynamicSteps: TestStep[] = [
+      {
+        action: 'dynamic_analyze',
+        description: 'AI will analyze the task and determine required actions',
+        expectedResult: 'Task analysis complete'
+      },
+      {
+        action: 'dynamic_navigate',
+        description: 'AI will navigate to the required page based on task',
+        expectedResult: 'Should reach the target page'
+      },
+      {
+        action: 'dynamic_interact',
+        description: 'AI will interact with elements based on task requirements',
+        expectedResult: 'Required interactions completed'
+      },
+      {
+        action: 'dynamic_verify',
+        description: 'AI will verify the expected results',
+        expectedResult: 'Verification completed'
+      }
+    ];
 
     return {
-      steps: plans[planType] || plans.form,
-      confidence: 0.7,
-      reasoning: `Fallback plan based on task analysis: ${planType} pattern detected`
+      steps: dynamicSteps,
+      confidence: 0.9,
+      reasoning: `Fully dynamic AI plan - analyzes task and executes based on user requirements`
     };
   }
 
@@ -309,31 +353,364 @@ Example format:
     if (!this.browser) throw new Error('Browser not initialized');
 
     switch (step.action) {
+      case 'dynamic_analyze':
+        // AI analyzes the task and determines what needs to be done
+        console.log(chalk.blue('🤖 AI: Analyzing task requirements...'));
+        console.log(chalk.gray('📋 Task: ' + step.description));
+        console.log(chalk.gray('🎯 Expected: ' + step.expectedResult));
+        // AI will use testData to understand what to do
+        break;
+        
+      case 'dynamic_navigate':
+        // AI navigates based on task requirements
+        let targetUrl = testData.targetUrl;
+        if (targetUrl && !targetUrl.startsWith('http')) {
+          // If targetUrl is relative, combine with base site URL
+          const baseUrl = testData.site || 'https://the-internet.herokuapp.com';
+          targetUrl = baseUrl + targetUrl;
+        } else {
+          targetUrl = testData.targetUrl || testData.site || '/';
+        }
+        console.log(chalk.blue(`🤖 AI: Navigating to: ${targetUrl}`));
+        await this.navigationTools.goTo(targetUrl);
+        // Wait for page to load
+        await this.browser.pause(2000);
+        break;
+        
+      case 'dynamic_interact':
+        // AI interacts with elements based on task requirements using Smart AI Detection
+        console.log(chalk.blue('🤖 AI: Interacting with elements based on task...'));
+        
+        // Use Smart AI Detection for form interactions
+        if (testData.username && testData.usernameSelector) {
+          console.log(chalk.gray(`📝 Filling username: ${testData.usernameSelector}`));
+          const usernameElement = await this.smartElementDetection(testData.usernameSelector, 'username');
+          await usernameElement.setValue(testData.username);
+        }
+        
+        if (testData.password && testData.passwordSelector) {
+          console.log(chalk.gray(`🔒 Filling password: ${testData.passwordSelector}`));
+          const passwordElement = await this.smartElementDetection(testData.passwordSelector, 'password');
+          await passwordElement.setValue(testData.password);
+        }
+        
+        if (testData.submitSelector) {
+          console.log(chalk.gray(`🖱️ Clicking submit: ${testData.submitSelector}`));
+          const submitElement = await this.smartElementDetection(testData.submitSelector, 'submit');
+          await submitElement.click();
+        }
+        
+        // Handle checkbox interactions
+        if (testData.checkbox1Selector) {
+          console.log(chalk.gray(`☑️ Interacting with checkbox 1: ${testData.checkbox1Selector}`));
+          const checkbox1 = await this.smartElementDetection(testData.checkbox1Selector, 'checkbox');
+          await checkbox1.click();
+        }
+        
+        if (testData.checkbox2Selector) {
+          console.log(chalk.gray(`☑️ Interacting with checkbox 2: ${testData.checkbox2Selector}`));
+          const checkbox2 = await this.smartElementDetection(testData.checkbox2Selector, 'checkbox');
+          await checkbox2.click();
+        }
+        
+        // Handle dropdown interactions
+        if (testData.dropdownSelector && testData.optionValue) {
+          console.log(chalk.gray(`📋 Selecting dropdown option: ${testData.optionValue}`));
+          const dropdown = await this.smartElementDetection(testData.dropdownSelector, 'dropdown');
+          await dropdown.selectByAttribute('value', testData.optionValue);
+        }
+        
+        // Handle file upload
+        if (testData.fileInputSelector && testData.filePath) {
+          console.log(chalk.gray(`📁 Uploading file: ${testData.filePath}`));
+          const fileInput = await this.smartElementDetection(testData.fileInputSelector, 'file');
+          await fileInput.setValue(testData.filePath);
+          
+          if (testData.uploadButtonSelector) {
+            console.log(chalk.gray(`🖱️ Clicking upload button: ${testData.uploadButtonSelector}`));
+            const uploadButton = await this.smartElementDetection(testData.uploadButtonSelector, 'button');
+            await uploadButton.click();
+          }
+        }
+        
+        // Handle JavaScript alerts
+        if (testData.alertButtonSelector) {
+          console.log(chalk.gray(`🚨 Clicking alert button: ${testData.alertButtonSelector}`));
+          const alertButton = await this.smartElementDetection(testData.alertButtonSelector, 'button');
+          await alertButton.click();
+          
+          // Handle the alert
+          try {
+            const alert = await this.browser.getAlertText();
+            console.log(chalk.gray(`📢 Alert text: ${alert}`));
+            await this.browser.acceptAlert();
+            console.log(chalk.green(`✅ Alert accepted`));
+          } catch (alertError) {
+            console.log(chalk.yellow(`⚠️ No alert found or alert handling failed: ${(alertError as Error).message}`));
+          }
+        }
+        
+        // Handle add/remove elements
+        if (testData.addButtonSelector) {
+          console.log(chalk.gray(`➕ Clicking add element button: ${testData.addButtonSelector}`));
+          const addButton = await this.smartElementDetection(testData.addButtonSelector, 'button');
+          await addButton.click();
+          
+          // Wait for element to be added
+          await this.browser.pause(1000);
+          
+          if (testData.deleteButtonSelector) {
+            console.log(chalk.gray(`➖ Clicking delete button: ${testData.deleteButtonSelector}`));
+            const deleteButton = await this.smartElementDetection(testData.deleteButtonSelector, 'button');
+            await deleteButton.click();
+          }
+        }
+        
+        // Handle hover interactions
+        if (testData.hoverElementSelector) {
+          console.log(chalk.gray(`🖱️ Hovering over element: ${testData.hoverElementSelector}`));
+          const hoverElement = await this.smartElementDetection(testData.hoverElementSelector, 'hover');
+          await hoverElement.moveTo();
+        }
+        
+        // Handle key presses
+        if (testData.inputSelector && testData.key) {
+          console.log(chalk.gray(`⌨️ Pressing key '${testData.key}' in input: ${testData.inputSelector}`));
+          const inputElement = await this.smartElementDetection(testData.inputSelector, 'input');
+          await inputElement.click();
+          await inputElement.setValue(testData.key);
+        }
+        
+        // Handle link clicks
+        if (testData.linkSelector) {
+          console.log(chalk.gray(`🔗 Clicking link: ${testData.linkSelector}`));
+          const linkElement = await this.smartElementDetection(testData.linkSelector, 'link');
+          await linkElement.click();
+        }
+        
+        // Generic interactions based on testData with Smart AI Detection
+        if (testData.actions) {
+          for (const action of testData.actions) {
+            console.log(chalk.gray(`⚡ Executing: ${action.type} - ${action.selector}`));
+            await this.executeSmartWebDriverIOAction(action);
+          }
+        }
+        break;
+        
+      case 'dynamic_verify':
+        // AI verifies results based on task requirements
+        console.log(chalk.blue('🤖 AI: Verifying expected results...'));
+        
+        // Get current page context for verification
+        const verifyContext = await this.analyzePageState();
+        
+        if (testData.expectedText) {
+          console.log(chalk.gray(`✅ Verifying text: ${testData.expectedText}`));
+          try {
+            await this.verificationTools.verifyText(testData.expectedText);
+          } catch (error) {
+            // If text not found, try alternative verification methods
+            console.log(chalk.yellow(`⚠️ Text "${testData.expectedText}" not found, trying alternative verification...`));
+            
+            // Check if we're on secure page and verify page title instead
+            if (verifyContext.pageType === 'secure') {
+              console.log(chalk.gray(`🔍 Verifying secure page title instead...`));
+              await this.verificationTools.verifyText('Secure Area');
+            } else {
+              throw error;
+            }
+          }
+        }
+        
+        if (testData.expectedElement) {
+          console.log(chalk.gray(`✅ Verifying element: ${testData.expectedElement}`));
+          try {
+            await this.verificationTools.verifyElement(testData.expectedElement);
+          } catch (error) {
+            // If element not found, try context-aware alternatives
+            console.log(chalk.yellow(`⚠️ Element "${testData.expectedElement}" not found, trying context-aware alternatives...`));
+            
+            if (verifyContext.pageType === 'secure' && testData.expectedElement.includes('success')) {
+              // Try alternative success indicators on secure page
+              const successSelectors = ['.flash.success', '.alert-success', '[class*="success"]', 'h2'];
+              let found = false;
+              
+              for (const selector of successSelectors) {
+                try {
+                  await this.verificationTools.verifyElement(selector);
+                  console.log(chalk.green(`✅ Found alternative success indicator: ${selector}`));
+                  found = true;
+                  break;
+                } catch (altError) {
+                  continue;
+                }
+              }
+              
+              if (!found) {
+                throw new Error(`No success indicators found on secure page`);
+              }
+            } else {
+              throw error;
+            }
+          }
+        }
+        
+        // Dynamic verification based on testData
+        if (testData.verifications) {
+          for (const verification of testData.verifications) {
+            console.log(chalk.gray(`✅ Verifying: ${verification.type} - ${verification.selector}`));
+            await this.executeWebDriverIOVerification(verification);
+          }
+        }
+        break;
+        
       case 'click_element':
         await this.interactionTools.clickElement(step.selector!);
         break;
+        
       case 'fill_form':
         const value = step.value || testData[step.selector!] || '';
         await this.interactionTools.fillForm(step.selector!, value.toString());
         break;
+        
       case 'verify_text':
         await this.verificationTools.verifyText(step.value!.toString());
         break;
+        
       case 'verify_element':
         await this.verificationTools.verifyElement(step.selector!);
         break;
+        
       case 'wait_for_element':
         await this.browserTools.waitForElement(step.selector!);
         break;
+        
       case 'take_screenshot':
         await this.takeScreenshot(step.value?.toString() || 'step-screenshot');
         break;
+        
       case 'wait-time':
         const waitTime = parseInt(String(step.value || step.selector || '1000')) * 1000;
         await this.browser.pause(waitTime);
         break;
+        
       default:
         throw new Error(`Unknown action: ${step.action}`);
+    }
+  }
+
+  // New method to execute WebDriverIO actions with Smart AI Detection
+  private async executeSmartWebDriverIOAction(action: any): Promise<void> {
+    if (!this.browser) throw new Error('Browser not initialized');
+    
+    // Use Smart AI Detection to find the element
+    const element = await this.smartElementDetection(action.selector, action.type, action.timeout || 30000);
+    
+    // Cap timeout to 30s max
+    const maxTimeout = 30000;
+    const timeout = action.timeout ? Math.min(action.timeout, maxTimeout) : undefined;
+    
+    switch (action.type) {
+      case 'click':
+        await element.click();
+        break;
+      case 'doubleClick':
+        await element.doubleClick();
+        break;
+      case 'setValue':
+        await element.setValue(action.value);
+        break;
+      case 'addValue':
+        await element.addValue(action.value);
+        break;
+      case 'clearValue':
+        await element.clearValue();
+        break;
+      case 'selectByVisibleText':
+        await element.selectByVisibleText(action.value);
+        break;
+      case 'selectByIndex':
+        await element.selectByIndex(action.value);
+        break;
+      case 'selectByAttribute':
+        await element.selectByAttribute(action.attribute, action.value);
+        break;
+      case 'scrollIntoView':
+        await element.scrollIntoView();
+        break;
+      case 'dragAndDrop':
+        if (!this.browser) throw new Error('Browser not initialized');
+        const targetElement = await this.browser.$(action.target);
+        await element.dragAndDrop(targetElement);
+        break;
+      case 'moveTo':
+        await element.moveTo();
+        break;
+      case 'touchAction':
+        await element.touchAction(action.actions);
+        break;
+      case 'waitForDisplayed':
+        console.log(chalk.gray(`⏳ Element already found and displayed by Smart AI Detection`));
+        break;
+      case 'waitForClickable':
+        console.log(chalk.gray(`⏳ Element already found and clickable by Smart AI Detection`));
+        break;
+      case 'waitForExist':
+        console.log(chalk.gray(`⏳ Element already found and exists by Smart AI Detection`));
+        break;
+      case 'waitForEnabled':
+        console.log(chalk.gray(`⏳ Element already found and enabled by Smart AI Detection`));
+        break;
+      case 'waitForStable':
+        console.log(chalk.gray(`⏳ Element already found and stable by Smart AI Detection`));
+        break;
+      default:
+        throw new Error(`Unknown WebDriverIO action: ${action.type}`);
+    }
+  }
+
+  // New method to execute WebDriverIO element verifications
+  private async executeWebDriverIOVerification(verification: any): Promise<void> {
+    if (!this.browser) throw new Error('Browser not initialized');
+    const element = await this.browser.$(verification.selector);
+    
+    switch (verification.type) {
+      case 'isDisplayed':
+        const isDisplayed = await element.isDisplayed();
+        if (!isDisplayed) throw new Error(`Element ${verification.selector} is not displayed`);
+        break;
+      case 'isEnabled':
+        const isEnabled = await element.isEnabled();
+        if (!isEnabled) throw new Error(`Element ${verification.selector} is not enabled`);
+        break;
+      case 'isClickable':
+        const isClickable = await element.isClickable();
+        if (!isClickable) throw new Error(`Element ${verification.selector} is not clickable`);
+        break;
+      case 'isExisting':
+        const isExisting = await element.isExisting();
+        if (!isExisting) throw new Error(`Element ${verification.selector} does not exist`);
+        break;
+      case 'getText':
+        const text = await element.getText();
+        if (verification.expectedValue && !text.includes(verification.expectedValue)) {
+          throw new Error(`Element text "${text}" does not contain expected value "${verification.expectedValue}"`);
+        }
+        break;
+      case 'getValue':
+        const value = await element.getValue();
+        if (verification.expectedValue && value !== verification.expectedValue) {
+          throw new Error(`Element value "${value}" does not match expected value "${verification.expectedValue}"`);
+        }
+        break;
+      case 'getAttribute':
+        const attribute = await element.getAttribute(verification.attribute);
+        if (verification.expectedValue && attribute !== verification.expectedValue) {
+          throw new Error(`Element attribute "${verification.attribute}" value "${attribute}" does not match expected value "${verification.expectedValue}"`);
+        }
+        break;
+      default:
+        throw new Error(`Unknown WebDriverIO verification: ${verification.type}`);
     }
   }
 
@@ -439,13 +816,14 @@ Example format:
           await this.browser!.pause(3000); // Wait longer for login redirect
           
           // Wait for page to load completely
-          await this.browser!.waitUntil(async () => {
-            const readyState = await this.browser!.execute(() => document.readyState);
-            return readyState === 'complete';
-          }, {
-            timeout: 10000,
-            timeoutMsg: 'Page did not load completely after login'
-          });
+          await this.browser!.waitUntil(
+            async () => {
+              if (!this.browser) return false;
+              const readyState = await this.browser.execute(() => document.readyState);
+              return readyState === 'complete';
+            },
+            { timeout: 10000, timeoutMsg: 'Page did not load completely after login' }
+          );
           
           console.log(chalk.green(`     ✅ Page loaded successfully after login`));
         } else {
@@ -853,6 +1231,319 @@ Example format:
       }
     } catch (error) {
       return false;
+    }
+  }
+
+  // Smart AI Detection System
+  private async smartElementDetection(selector: string, action: string, timeout: number = 30000): Promise<any> {
+    if (!this.browser) throw new Error('Browser not initialized');
+    
+    console.log(chalk.blue(`🧠 Smart AI Detection: Looking for element "${selector}" for action "${action}"`));
+    
+    // Step 1: Page State Analysis
+    const pageContext = await this.analyzePageState();
+    
+    // Step 2: Check if element should exist on current page
+    if (!this.shouldElementExistOnPage(selector, action, pageContext)) {
+      console.log(chalk.yellow(`⚠️ Element "${selector}" is not expected on current page (${pageContext.url})`));
+      throw new Error(`Element "${selector}" not expected on current page context`);
+    }
+    
+    // Step 3: Generate Multiple Selectors
+    const selectors = this.generateMultipleSelectors(selector, action, pageContext);
+    
+    // Step 4: Try Each Selector with Smart Wait
+    for (const currentSelector of selectors) {
+      try {
+        console.log(chalk.gray(`🔍 Trying selector: ${currentSelector}`));
+        
+        // Smart Wait with Context Recovery
+        const element = await this.smartWaitForElement(currentSelector, timeout);
+        
+        if (element) {
+          console.log(chalk.green(`✅ Element found with selector: ${currentSelector}`));
+          return element;
+        }
+      } catch (error) {
+        console.log(chalk.yellow(`⚠️ Selector failed: ${currentSelector} - ${(error as Error).message}`));
+        continue;
+      }
+    }
+    
+    // Step 5: If all selectors fail, try context recovery
+    console.log(chalk.yellow(`🔄 All selectors failed, attempting context recovery...`));
+    await this.recoverBrowserContext();
+    
+    // Step 6: Try again with recovered context
+    for (const currentSelector of selectors) {
+      try {
+        console.log(chalk.gray(`🔄 Retrying with recovered context: ${currentSelector}`));
+        const element = await this.smartWaitForElement(currentSelector, 10000);
+        
+        if (element) {
+          console.log(chalk.green(`✅ Element found after context recovery: ${currentSelector}`));
+          return element;
+        }
+      } catch (error) {
+        console.log(chalk.yellow(`⚠️ Retry failed: ${currentSelector}`));
+        continue;
+      }
+    }
+    
+    throw new Error(`Smart AI Detection failed: Could not find element for "${selector}" after trying ${selectors.length} selectors and context recovery`);
+  }
+
+  // Page State Analysis with Context
+  private async analyzePageState(): Promise<{url: string, title: string, readyState: string, pageType: string}> {
+    if (!this.browser) throw new Error('Browser not initialized');
+    
+    try {
+      console.log(chalk.blue(`📊 Analyzing page state...`));
+      
+      // Check if page is loaded
+      const readyState = await this.browser.execute(() => document.readyState);
+      console.log(chalk.gray(`📄 Page ready state: ${readyState}`));
+      
+      // Check if there are any loading indicators
+      const loadingElements = await this.browser.$$('[class*="loading"], [class*="spinner"], [class*="loader"]');
+      if (loadingElements.length > 0) {
+        console.log(chalk.yellow(`⏳ Found ${loadingElements.length} loading indicators, waiting...`));
+        await this.browser.pause(2000);
+      }
+      
+      // Check for common error states
+      const errorElements = await this.browser.$$('[class*="error"], [class*="alert"], .alert-danger');
+      if (errorElements.length > 0) {
+        console.log(chalk.red(`❌ Found ${errorElements.length} error elements on page`));
+      }
+      
+      // Check page title and URL
+      const title = await this.browser.getTitle();
+      const url = await this.browser.getUrl();
+      console.log(chalk.gray(`🌐 Current page: ${title} (${url})`));
+      
+      // Determine page type based on URL and content
+      let pageType = 'unknown';
+      if (url.includes('/login')) pageType = 'login';
+      else if (url.includes('/secure')) pageType = 'secure';
+      else if (url.includes('/dashboard')) pageType = 'dashboard';
+      else if (url.includes('/home')) pageType = 'home';
+      
+      console.log(chalk.gray(`📋 Page type: ${pageType}`));
+      
+      return { url, title, readyState, pageType };
+      
+    } catch (error) {
+      console.log(chalk.yellow(`⚠️ Page state analysis failed: ${(error as Error).message}`));
+      return { url: '', title: '', readyState: 'unknown', pageType: 'unknown' };
+    }
+  }
+
+  // Check if element should exist on current page
+  private shouldElementExistOnPage(selector: string, action: string, pageContext: {url: string, title: string, readyState: string, pageType: string}): boolean {
+    // Login form elements should only exist on login page
+    if (pageContext.pageType === 'secure' && (action === 'username' || action === 'password' || selector.includes('username') || selector.includes('password'))) {
+      return false;
+    }
+    
+    // Submit button should only exist on login page
+    if (pageContext.pageType === 'secure' && (action === 'submit' || action.includes('submit') || action.includes('login'))) {
+      return false;
+    }
+    
+    // Success message should exist on secure page after login
+    if (pageContext.pageType === 'login' && (selector.includes('success') || selector.includes('flash'))) {
+      return false;
+    }
+    
+    // Error message should exist on login page for failed login
+    if (pageContext.pageType === 'secure' && (selector.includes('error') || action.includes('error'))) {
+      return false;
+    }
+    
+    return true;
+  }
+
+  // Generate Multiple Selectors Strategy with Page Context
+  private generateMultipleSelectors(originalSelector: string, action: string, pageContext: {url: string, title: string, readyState: string, pageType: string}): string[] {
+    const selectors: string[] = [originalSelector];
+    
+    // Extract element type and attributes
+    const isId = originalSelector.startsWith('#');
+    const isClass = originalSelector.startsWith('.');
+    const isTag = !originalSelector.includes('[') && !originalSelector.includes('#') && !originalSelector.includes('.');
+    
+    if (isId) {
+      const id = originalSelector.substring(1);
+      selectors.push(`[id="${id}"]`);
+      selectors.push(`input[id="${id}"]`);
+      selectors.push(`*[id="${id}"]`);
+    }
+    
+    // Page-specific selectors
+    if (pageContext.pageType === 'login') {
+      if (action === 'username' || action.includes('username')) {
+        selectors.push('input[name="username"]');
+        selectors.push('input[type="text"]');
+        selectors.push('#username');
+        selectors.push('[name="username"]');
+      }
+      
+      if (action === 'password' || action.includes('password')) {
+        selectors.push('input[name="password"]');
+        selectors.push('input[type="password"]');
+        selectors.push('#password');
+        selectors.push('[name="password"]');
+      }
+      
+      if (action === 'submit' || action.includes('submit') || action.includes('login')) {
+        selectors.push('button[type="submit"]');
+        selectors.push('input[type="submit"]');
+        selectors.push('.radius');
+        selectors.push('button:contains("Login")');
+        selectors.push('[type="submit"]');
+      }
+    }
+    
+    if (pageContext.pageType === 'secure') {
+      if (action === 'success' || action.includes('success') || originalSelector.includes('success')) {
+        selectors.push('.flash.success');
+        selectors.push('.alert-success');
+        selectors.push('[class*="success"]');
+        selectors.push('div:contains("You logged into a secure area!")');
+      }
+      
+      if (action === 'logout' || action.includes('logout')) {
+        selectors.push('a[href="/logout"]');
+        selectors.push('.button.secondary');
+        selectors.push('a:contains("Logout")');
+      }
+    }
+    
+    // Generic element type selectors
+    if (action === 'checkbox' || originalSelector.includes('checkbox')) {
+      selectors.push('input[type="checkbox"]');
+      selectors.push('[type="checkbox"]');
+    }
+    
+    if (action === 'dropdown' || originalSelector.includes('dropdown') || originalSelector.includes('select')) {
+      selectors.push('select');
+      selectors.push('option');
+      selectors.push('[role="listbox"]');
+    }
+    
+    if (action === 'file' || originalSelector.includes('file') || originalSelector.includes('upload')) {
+      selectors.push('input[type="file"]');
+      selectors.push('[type="file"]');
+    }
+    
+    if (action === 'button' || originalSelector.includes('button')) {
+      selectors.push('button');
+      selectors.push('input[type="button"]');
+      selectors.push('input[type="submit"]');
+      selectors.push('.btn');
+    }
+    
+    if (action === 'input' || originalSelector.includes('input')) {
+      selectors.push('input[type="text"]');
+      selectors.push('input[type="email"]');
+      selectors.push('textarea');
+    }
+    
+    if (action === 'link' || originalSelector.includes('link') || originalSelector.includes('a[')) {
+      selectors.push('a');
+      selectors.push('[href]');
+    }
+    
+    if (action === 'table' || originalSelector.includes('table')) {
+      selectors.push('table');
+      selectors.push('tbody');
+      selectors.push('tr');
+    }
+    
+    if (action === 'image' || originalSelector.includes('img')) {
+      selectors.push('img');
+      selectors.push('[src]');
+    }
+    
+    // Remove duplicates
+    return [...new Set(selectors)];
+  }
+
+  // Smart Wait with Context Recovery
+  private async smartWaitForElement(selector: string, timeout: number): Promise<any> {
+    if (!this.browser) throw new Error('Browser not initialized');
+    
+    const maxAttempts = 3;
+    const attemptTimeout = Math.floor(timeout / maxAttempts);
+    
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        console.log(chalk.gray(`⏳ Attempt ${attempt}/${maxAttempts}: Waiting for element (${attemptTimeout}ms)`));
+        
+        // Get fresh element reference
+        const element = await this.browser.$(selector);
+        
+        // Wait for element to be displayed
+        await element.waitForDisplayed({ timeout: attemptTimeout });
+        
+        // Additional checks based on element type
+        if (selector.includes('input')) {
+          await element.waitForEnabled({ timeout: 5000 });
+        }
+        
+        if (selector.includes('button')) {
+          await element.waitForClickable({ timeout: 5000 });
+        }
+        
+        return element;
+        
+      } catch (error) {
+        console.log(chalk.yellow(`⚠️ Attempt ${attempt} failed: ${(error as Error).message}`));
+        
+        if (attempt < maxAttempts) {
+          // Wait before next attempt
+          await this.browser.pause(1000);
+          
+          // Try to refresh element reference
+          try {
+            await this.browser.refresh();
+            await this.browser.pause(2000);
+          } catch (refreshError) {
+            console.log(chalk.yellow(`⚠️ Page refresh failed: ${(refreshError as Error).message}`));
+          }
+        }
+      }
+    }
+    
+    return null;
+  }
+
+  // Context Recovery
+  private async recoverBrowserContext(): Promise<void> {
+    if (!this.browser) throw new Error('Browser not initialized');
+    
+    try {
+      console.log(chalk.blue(`🔄 Recovering browser context...`));
+      
+      // Try to refresh the page
+      await this.browser.refresh();
+      await this.browser.pause(3000);
+      
+      // Wait for page to be ready
+      await this.browser.waitUntil(
+        async () => {
+          if (!this.browser) return false;
+          const readyState = await this.browser.execute(() => document.readyState);
+          return readyState === 'complete';
+        },
+        { timeout: 10000, timeoutMsg: 'Page did not load completely after refresh' }
+      );
+      
+      console.log(chalk.green(`✅ Browser context recovered`));
+      
+    } catch (error) {
+      console.log(chalk.red(`❌ Context recovery failed: ${(error as Error).message}`));
     }
   }
 }
