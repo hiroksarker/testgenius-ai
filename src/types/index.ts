@@ -152,6 +152,25 @@ export interface FrameworkConfig {
   session: SessionConfig;
   logging: LoggingConfig;
   environments: Record<string, EnvironmentConfig>;
+  costTracking?: {
+    enabled: boolean;
+    currency: string;
+    modelPricing: {
+      'gpt-4o': { inputCostPer1k: number; outputCostPer1k: number };
+      'gpt-4': { inputCostPer1k: number; outputCostPer1k: number };
+      'gpt-3.5-turbo': { inputCostPer1k: number; outputCostPer1k: number };
+    };
+    budgetAlerts: {
+      enabled: boolean;
+      dailyLimit: number;
+      monthlyLimit: number;
+    };
+    optimization: {
+      enabled: boolean;
+      suggestAlternativeModels: boolean;
+      trackCostSavings: boolean;
+    };
+  };
 }
 
 // CLI Options Types
@@ -302,6 +321,54 @@ export interface OpenAIResponse {
     completion_tokens: number;
     total_tokens: number;
   };
+}
+
+// Cost Tracking Types
+export interface TokenUsage {
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+  model: string;
+  timestamp: Date;
+}
+
+export interface CostMetrics {
+  tokenUsage: TokenUsage;
+  estimatedCost: number;
+  costCurrency: string;
+  modelPricing: {
+    inputCostPer1k: number;
+    outputCostPer1k: number;
+  };
+}
+
+export interface TestCostData {
+  testId: string;
+  sessionId: string;
+  costMetrics: CostMetrics;
+  executionTime: number;
+  success: boolean;
+  optimizationScore?: number;
+  costSavings?: number;
+}
+
+export interface CostOptimizationReport {
+  totalTests: number;
+  totalCost: number;
+  averageCostPerTest: number;
+  costSavings: number;
+  optimizationRecommendations: string[];
+  costTrend: {
+    date: string;
+    cost: number;
+    tests: number;
+  }[];
+  topExpensiveTests: TestCostData[];
+  costByCategory: {
+    category: string;
+    cost: number;
+    tests: number;
+  }[];
 }
 
 // File System Types

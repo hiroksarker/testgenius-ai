@@ -164,8 +164,59 @@ program
   .description('📊 Generate and open test report')
   .option('--allure', 'Open Allure report instead of HTML report')
   .option('--serve <port>', 'Serve Allure report on specific port (default: 8080)')
+  .option('--cost', 'Show cost analysis report')
+  .option('--optimization', 'Show cost optimization recommendations')
   .action(async (options) => {
     try {
+      if (options.cost || options.optimization) {
+        console.log(chalk.blue('💰 Generating cost analysis report...'));
+        
+        // Load config to get cost tracking settings
+        const { ConfigManager } = require('../framework/core/ConfigManager');
+        const { CostTracker } = require('../framework/core/CostTracker');
+        
+        const configManager = new ConfigManager();
+        const config = await configManager.loadConfig();
+        
+        if (!config.costTracking?.enabled) {
+          console.log(chalk.yellow('⚠️  Cost tracking is not enabled. Enable it in your config to use cost features.'));
+          return;
+        }
+        
+        const costTracker = new CostTracker(config);
+        const costReport = await costTracker.generateCostReport();
+        
+        if (options.cost) {
+          console.log(chalk.green('\n💰 Cost Analysis Report'));
+          console.log(chalk.gray('='.repeat(50)));
+          console.log(`Total Tests: ${costReport.totalTests}`);
+          console.log(`Total Cost: $${costReport.totalCost.toFixed(4)}`);
+          console.log(`Average Cost per Test: $${costReport.averageCostPerTest.toFixed(4)}`);
+          console.log(`Potential Savings: $${costReport.costSavings.toFixed(4)}`);
+          
+          if (costReport.topExpensiveTests.length > 0) {
+            console.log(chalk.yellow('\n🏆 Top 5 Most Expensive Tests:'));
+            costReport.topExpensiveTests.slice(0, 5).forEach((test: any, index: number) => {
+              console.log(`${index + 1}. ${test.testId}: $${test.costMetrics.estimatedCost.toFixed(4)} (${test.costMetrics.tokenUsage.model})`);
+            });
+          }
+        }
+        
+        if (options.optimization) {
+          console.log(chalk.green('\n🚀 Cost Optimization Recommendations'));
+          console.log(chalk.gray('='.repeat(50)));
+          if (costReport.optimizationRecommendations.length > 0) {
+            costReport.optimizationRecommendations.forEach((rec: string, index: number) => {
+              console.log(`${index + 1}. ${rec}`);
+            });
+          } else {
+            console.log('No optimization recommendations at this time.');
+          }
+        }
+        
+        return;
+      }
+      
       if (options.allure) {
         console.log(chalk.blue('📊 Opening Allure report...'));
         
@@ -185,37 +236,16 @@ program
         }
         
       } else {
-        console.log(chalk.blue('📊 Generating test report...'));
+        // Generate simple HTML report
+        console.log(chalk.blue('📊 Generating HTML report...'));
         
-        // Find the latest report
-        const fs = require('fs-extra');
-        const path = require('path');
-        
-        const reportsDir = 'reports';
-        if (!(await fs.pathExists(reportsDir))) {
-          console.log(chalk.yellow('⚠️  No reports found. Run tests first with "testgenius run".'));
-          return;
-        }
-        
-        const files = await fs.readdir(reportsDir);
-        const htmlFiles = files.filter((file: string) => file.endsWith('.html')).sort().reverse();
-        
-        if (htmlFiles.length === 0) {
-          console.log(chalk.yellow('⚠️  No HTML reports found. Run tests first with "testgenius run".'));
-          return;
-        }
-        
-        const latestReport = path.join(reportsDir, htmlFiles[0]);
-        console.log(chalk.green(`✅ Latest report: ${latestReport}`));
-        console.log(chalk.blue('🌐 Opening report in browser...'));
-        
-        // Open in browser
-        const open = require('open');
-        await open(latestReport);
+        const { ReportGenerator } = require('../framework/core/ReportGenerator');
+        const reportGenerator = new ReportGenerator();
+        await reportGenerator.generate();
       }
       
     } catch (error) {
-      console.error(chalk.red('❌ Failed to generate report:'), (error as Error).message);
+      console.error(chalk.red('❌ Report generation failed:'), (error as Error).message);
       process.exit(1);
     }
   });
@@ -263,6 +293,105 @@ program
       
     } catch (error) {
       console.error(chalk.red('❌ Version check failed:'), (error as Error).message);
+    }
+  });
+
+// Cost tracking commands
+program
+  .command('cost')
+  .description('💰 Cost tracking and optimization features')
+  .option('--enable', 'Enable cost tracking in config')
+  .option('--disable', 'Disable cost tracking in config')
+  .option('--budget <amount>', 'Set daily budget limit')
+  .option('--monthly-budget <amount>', 'Set monthly budget limit')
+  .option('--analyze', 'Analyze current cost data')
+  .option('--optimize', 'Show optimization recommendations')
+  .action(async (options) => {
+    try {
+      const { ConfigManager } = require('../framework/core/ConfigManager');
+      const { CostTracker } = require('../framework/core/CostTracker');
+      
+      const configManager = new ConfigManager();
+      const config = await configManager.loadConfig();
+      
+      if (options.enable) {
+        config.costTracking = config.costTracking || {};
+        config.costTracking.enabled = true;
+        await configManager.saveConfig(config);
+        console.log(chalk.green('✅ Cost tracking enabled'));
+      }
+      
+      if (options.disable) {
+        if (config.costTracking) {
+          config.costTracking.enabled = false;
+          await configManager.saveConfig(config);
+          console.log(chalk.yellow('⚠️  Cost tracking disabled'));
+        }
+      }
+      
+      if (options.budget) {
+        const amount = parseFloat(options.budget);
+        if (isNaN(amount)) {
+          console.error(chalk.red('❌ Invalid budget amount'));
+          return;
+        }
+        config.costTracking = config.costTracking || {};
+        config.costTracking.budgetAlerts = config.costTracking.budgetAlerts || {};
+        config.costTracking.budgetAlerts.enabled = true;
+        config.costTracking.budgetAlerts.dailyLimit = amount;
+        await configManager.saveConfig(config);
+        console.log(chalk.green(`✅ Daily budget limit set to $${amount}`));
+      }
+      
+      if (options.monthlyBudget) {
+        const amount = parseFloat(options.monthlyBudget);
+        if (isNaN(amount)) {
+          console.error(chalk.red('❌ Invalid monthly budget amount'));
+          return;
+        }
+        config.costTracking = config.costTracking || {};
+        config.costTracking.budgetAlerts = config.costTracking.budgetAlerts || {};
+        config.costTracking.budgetAlerts.enabled = true;
+        config.costTracking.budgetAlerts.monthlyLimit = amount;
+        await configManager.saveConfig(config);
+        console.log(chalk.green(`✅ Monthly budget limit set to $${amount}`));
+      }
+      
+      if (options.analyze || options.optimize) {
+        if (!config.costTracking?.enabled) {
+          console.log(chalk.yellow('⚠️  Cost tracking is not enabled. Use --enable to enable it.'));
+          return;
+        }
+        
+        const costTracker = new CostTracker(config);
+        
+        if (options.analyze) {
+          const costReport = await costTracker.generateCostReport();
+          console.log(chalk.green('\n💰 Cost Analysis'));
+          console.log(chalk.gray('='.repeat(30)));
+          console.log(`Total Tests: ${costReport.totalTests}`);
+          console.log(`Total Cost: $${costReport.totalCost.toFixed(4)}`);
+          console.log(`Average Cost per Test: $${costReport.averageCostPerTest.toFixed(4)}`);
+          console.log(`Potential Savings: $${costReport.costSavings.toFixed(4)}`);
+        }
+        
+        if (options.optimize) {
+          const costReport = await costTracker.generateCostReport();
+          console.log(chalk.green('\n🚀 Optimization Recommendations'));
+          console.log(chalk.gray('='.repeat(30)));
+          if (costReport.optimizationRecommendations.length > 0) {
+            costReport.optimizationRecommendations.forEach((rec: string, index: number) => {
+              console.log(`${index + 1}. ${rec}`);
+            });
+          } else {
+            console.log('No optimization recommendations at this time.');
+          }
+        }
+      }
+      
+    } catch (error) {
+      console.error(chalk.red('❌ Cost tracking operation failed:'), (error as Error).message);
+      process.exit(1);
     }
   });
 

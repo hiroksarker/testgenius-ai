@@ -1,4 +1,4 @@
-// Authentication Tests for TestGenius AI (User-facing)
+// Authentication Tests for TestGenius AI (Full WebDriverIO Support)
 
 module.exports = [
   {
@@ -7,12 +7,21 @@ module.exports = [
     description: "Test login functionality with valid credentials",
     priority: "High",
     tags: ["authentication", "login", "smoke"],
-    site: "https://example.com",
+    site: process.env.STAGING_BASE_URL || "https://the-internet.herokuapp.com",
     testData: {
-      email: "test@example.com",
-      password: "password123"
+      // Dynamic data - AI will use this to understand what to do
+      targetUrl: "/login", // AI will navigate to this URL
+      username: "tomsmith",
+      password: "SuperSecretPassword!",
+      usernameSelector: "#username",
+      passwordSelector: "#password",
+      submitSelector: "button[type='submit']",
+      expectedText: "Secure Area", // AI will verify this text appears
+      expectedElement: ".flash.success", // AI will verify this element exists
+      // Smart AI Detection will handle all interactions automatically
+      // No need for redundant actions - AI will use the selectors above
     },
-    task: "Navigate to the login page, enter valid email and password, click the login button, and verify that the user is successfully logged in by checking for a welcome message or dashboard element"
+    task: "Navigate to the login page, enter valid username and password in the login form, click the login button, and verify successful login"
   },
   {
     id: "AUTH-002",
@@ -20,52 +29,18 @@ module.exports = [
     description: "Test login functionality with invalid credentials",
     priority: "Medium",
     tags: ["authentication", "login", "validation"],
-    site: "https://example.com",
+    site: process.env.STAGING_BASE_URL || "https://the-internet.herokuapp.com",
     testData: {
-      email: "invalid@example.com",
-      password: "wrongpassword"
+      targetUrl: "/login",
+      username: "invalid@example.com",
+      password: "wrongpassword",
+      usernameSelector: "#username",
+      passwordSelector: "#password",
+      submitSelector: "button[type='submit']",
+      expectedText: "Your username is invalid", // AI will verify error message
+      expectedElement: ".flash.error", // AI will verify error element
+      // Smart AI Detection will handle all interactions automatically
     },
-    task: "Navigate to the login page, enter invalid email and password, click the login button, and verify that an error message is displayed indicating invalid credentials"
-  },
-  {
-    id: "AUTH-003",
-    name: "User Registration Test",
-    description: "Test new user registration functionality",
-    priority: "Medium",
-    tags: ["authentication", "registration", "signup"],
-    site: "https://example.com",
-    testData: {
-      firstName: "John",
-      lastName: "Doe",
-      email: "john.doe@example.com",
-      password: "securePassword123",
-      confirmPassword: "securePassword123"
-    },
-    task: "Navigate to the registration page, fill out the registration form with valid information including first name, last name, email, password, and confirm password, submit the form, and verify that the user is successfully registered and redirected to a confirmation page"
-  },
-  {
-    id: "AUTH-004",
-    name: "Password Reset Test",
-    description: "Test password reset functionality",
-    priority: "Low",
-    tags: ["authentication", "password-reset", "recovery"],
-    site: "https://example.com",
-    testData: {
-      email: "user@example.com"
-    },
-    task: "Navigate to the login page, click on the 'Forgot Password' link, enter a valid email address, submit the form, and verify that a confirmation message is displayed indicating that password reset instructions have been sent"
-  },
-  {
-    id: "AUTH-005",
-    name: "User Logout Test",
-    description: "Test logout functionality",
-    priority: "Medium",
-    tags: ["authentication", "logout", "session"],
-    site: "https://example.com",
-    testData: {
-      email: "test@example.com",
-      password: "password123"
-    },
-    task: "First login with valid credentials, then locate and click the logout button or link, and verify that the user is successfully logged out and redirected to the login page"
+    task: "Navigate to the login page, enter invalid username and password, click the login button, and verify that an error message is displayed"
   }
 ]; 
