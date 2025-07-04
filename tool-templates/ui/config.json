@@ -1,0 +1,21 @@
+{
+  "name": "UI Tool",
+  "description": "UI interaction tool",
+  "version": "1.0.0",
+  "author": "Your Name",
+  "category": "ui",
+  "template": "ui",
+  "dependencies": ["webdriverio"],
+  "config": {
+    "selectors": {
+      "loginButton": "#login-btn",
+      "usernameField": "#username",
+      "passwordField": "#password"
+    },
+    "timeouts": {
+      "implicit": 10000,
+      "explicit": 5000
+    }
+  },
+  "enabled": true
+}

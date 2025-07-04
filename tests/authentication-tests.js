@@ -10,7 +10,7 @@ module.exports = [
     site: process.env.STAGING_BASE_URL || "https://the-internet.herokuapp.com",
     testData: {
       // Dynamic data - AI will use this to understand what to do
-      targetUrl: "/login", // AI will navigate to this URL
+      targetUrl: "https://the-internet.herokuapp.com/login", // AI will navigate to this URL
       username: "tomsmith",
       password: "SuperSecretPassword!",
       usernameSelector: "#username",
@@ -31,7 +31,7 @@ module.exports = [
     tags: ["authentication", "login", "validation"],
     site: process.env.STAGING_BASE_URL || "https://the-internet.herokuapp.com",
     testData: {
-      targetUrl: "/login",
+      targetUrl: "https://the-internet.herokuapp.com/login",
       username: "invalid@example.com",
       password: "wrongpassword",
       usernameSelector: "#username",

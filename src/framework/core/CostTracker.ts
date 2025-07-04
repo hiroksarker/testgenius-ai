@@ -245,6 +245,23 @@ export class CostTracker {
   }
 
   /**
+   * Get total cost from all tracked tests
+   */
+  async getTotalCost(): Promise<number> {
+    if (!this.config.costTracking?.enabled) return 0;
+
+    try {
+      if (!await fs.pathExists(this.costDataFile)) return 0;
+      
+      const costData: TestCostData[] = await fs.readJson(this.costDataFile);
+      return costData.reduce((sum, test) => sum + test.costMetrics.estimatedCost, 0);
+    } catch (error) {
+      console.error(chalk.red('❌ Failed to get total cost:'), (error as Error).message);
+      return 0;
+    }
+  }
+
+  /**
    * Check budget limits and send alerts
    */
   async checkBudgetLimits(): Promise<void> {

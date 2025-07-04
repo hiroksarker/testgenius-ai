@@ -1,0 +1,22 @@
+{
+  "name": "Database Tool",
+  "description": "Database testing tool",
+  "version": "1.0.0",
+  "author": "Your Name",
+  "category": "database",
+  "template": "database",
+  "dependencies": ["mysql2"],
+  "config": {
+    "connection": {
+      "host": "localhost",
+      "user": "root",
+      "password": "password",
+      "database": "testdb"
+    },
+    "queries": {
+      "getUser": "SELECT * FROM users WHERE id = ?",
+      "createUser": "INSERT INTO users (name, email) VALUES (?, ?)"
+    }
+  },
+  "enabled": true
+}

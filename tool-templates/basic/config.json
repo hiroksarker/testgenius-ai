@@ -1,0 +1,11 @@
+{
+  "name": "Basic Tool",
+  "description": "A basic custom tool",
+  "version": "1.0.0",
+  "author": "Your Name",
+  "category": "custom",
+  "template": "basic",
+  "dependencies": [],
+  "config": {},
+  "enabled": true
+}

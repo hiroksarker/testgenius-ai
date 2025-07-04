@@ -1,0 +1,11 @@
+{
+  "name": "test-tool",
+  "description": "A test tool",
+  "version": "1.0.0",
+  "author": "Test User",
+  "category": "custom",
+  "template": "basic",
+  "dependencies": [],
+  "config": {},
+  "enabled": true
+}

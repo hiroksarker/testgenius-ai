@@ -716,4 +716,96 @@ export class TestRunner {
   async clearLogs(): Promise<void> {
     return this.logger.clearLogs();
   }
+
+  /**
+   * 🚀 Run auto-generated test with maximum AI automation
+   */
+  async runAutoTest(testDefinition: TestDefinition, options: TestRunOptions = {}): Promise<TestResult> {
+    this.logger.info("🚀 Running AI-powered auto test...");
+
+    try {
+      // Initialize browser if not already done
+      if (!this.browser) {
+        await this.initializeBrowser(options, await this.configManager.loadConfig());
+      }
+
+      // Initialize AI executor
+      this.aiExecutor = new AITestExecutor(await this.configManager.loadConfig());
+      if (this.browser) {
+        this.aiExecutor.setBrowser(this.browser);
+      }
+
+      // Run the test with enhanced AI execution
+      const result = await this.aiExecutor.executeTest(testDefinition, options);
+      
+      const testResult: TestResult = {
+        id: testDefinition.id,
+        testId: testDefinition.id,
+        sessionId: `auto-${Date.now()}`,
+        startTime: new Date(),
+        endTime: new Date(),
+        status: result.success ? 'passed' : 'failed',
+        steps: result.steps,
+        screenshots: result.screenshots,
+        errors: result.errors || [],
+        success: result.success,
+        duration: Date.now() - Date.now(), // Will be calculated properly
+        browser: options.browser || 'chrome'
+      };
+
+      this.logger.success("✅ Auto test completed");
+      return testResult;
+
+    } catch (error) {
+      this.logger.error("❌ Auto test failed:", (error as Error).message);
+      throw error;
+    }
+  }
+
+  /**
+   * 💾 Save auto-generated test for future use
+   */
+  async saveAutoTest(testDefinition: TestDefinition, result: TestResult): Promise<void> {
+    try {
+      const testContent = this.generateAutoTestContent(testDefinition, result);
+      const fileName = `${testDefinition.id}.js`;
+      const filePath = path.join(process.cwd(), 'tests', fileName);
+      
+      await fs.ensureDir(path.dirname(filePath));
+      await fs.writeFile(filePath, testContent);
+      
+      this.logger.success(`✅ Auto test saved to: ${filePath}`);
+    } catch (error) {
+      this.logger.error("❌ Failed to save auto test:", (error as Error).message);
+      throw error;
+    }
+  }
+
+  /**
+   * 📝 Generate test content from auto-generated test
+   */
+  private generateAutoTestContent(testDefinition: TestDefinition, result: TestResult): string {
+    return `// Auto-generated test by TestGenius AI
+// Generated on: ${new Date().toISOString()}
+
+module.exports = {
+  id: '${testDefinition.id}',
+  name: '${testDefinition.name}',
+  description: '${testDefinition.description}',
+  priority: '${testDefinition.priority}',
+  tags: ${JSON.stringify(testDefinition.tags)},
+  site: '${testDefinition.site}',
+  task: '${testDefinition.task}',
+  testData: ${JSON.stringify(testDefinition.testData || {}, null, 2)},
+  
+  // Execution results
+  executionResults: {
+    success: ${result.success},
+    duration: ${result.duration || 0},
+    steps: ${result.steps.length},
+    screenshots: ${result.screenshots.length},
+    errors: ${result.errors.length}
+  }
+};`;
+  }
 }

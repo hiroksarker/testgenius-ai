@@ -14,6 +14,7 @@ export interface TestDefinition {
   site: string;
   testData?: TestData;
   task: string;
+  steps?: TestStep[];
 }
 
 // Test Execution Types
@@ -217,6 +218,18 @@ export interface AIExecutionResult {
   screenshots: string[];
   errors: string[];
   aiPlan?: AIExecutionPlan;
+}
+
+export interface ExecutionStats {
+  totalSteps: number;
+  successfulSteps: number;
+  failedSteps: number;
+  totalCost: number;
+  tokenUsage: TokenUsage[];
+  screenshots: string[];
+  adaptiveStrategies: string[];
+  fastMode: boolean;
+  cacheStats: { size: number; hitRate: number };
 }
 
 // Browser Tools Types
