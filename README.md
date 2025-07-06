@@ -1,499 +1,239 @@
-# 🧠 TestGenius AI
+# 🧠 Smart AI Testing Framework
 
-<div align="center">
-
-![TestGenius AI](https://img.shields.io/badge/TestGenius-AI%20Powered-blue?style=for-the-badge&logo=robot)
-![Version](https://img.shields.io/npm/v/testgenius-ai?style=for-the-badge)
-![Downloads](https://img.shields.io/npm/dm/testgenius-ai?style=for-the-badge)
-![License](https://img.shields.io/npm/l/testgenius-ai?style=for-the-badge)
-
-**🚀 The Ultimate E2E Testing Framework**
-
-*No coding required • AI-powered automation • Beautiful reports • Zero complexity*
-
-[![npm install](https://img.shields.io/badge/npm%20install--g%20testgenius--ai-brightgreen?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/testgenius-ai)
-
-</div>
+**AI-powered, WebDriverIO-based, fully dynamic E2E testing with zero hardcoded steps.**
 
 ---
 
-## ✨ What Makes TestGenius Special?
+## What is This?
 
-| 🎯 **For QA Engineers** | 🚀 **For Developers** | 🎨 **For Everyone** |
-|------------------------|----------------------|-------------------|
-| • **No programming skills needed** | • **TypeScript support** | • **Beautiful HTML reports** |
-| • **Interactive test recording** | • **Flexible configuration** | • **Auto-screenshots on failure** |
-| • **Simple test objects** | • **Extensible framework** | • **Cross-platform support** |
-| • **One-command setup** | • **Custom test runners** | • **Zero dependencies** |
-
----
-
-## 🎬 See It In Action
-
-### 📋 List Your Tests
-```bash
-testgenius list
-```
-
-### 🚀 Run Tests
-```bash
-testgenius run AUTH-001
-```
-
-### 📊 View Reports
-```bash
-testgenius report
-```
+A next-generation, AI-driven end-to-end testing framework that uses OpenAI and WebDriverIO to:
+- Dynamically interpret test instructions (no static parsing)
+- Support async test case formats (with `setup`, `data`, and `task` functions)
+- Leverage a Smart AI Agent for intelligent, context-aware automation
+- Auto-generate and execute plans using natural language
+- Provide beautiful, actionable reports
 
 ---
 
-## 🚀 Quick Start (3 Steps)
+## ✨ Key Features
 
-### 1️⃣ **Install**
+- **No static plans**: All test steps are dynamically generated and executed by AI
+- **Async test case support**: Write tests as async functions for setup, data, and task
+- **Smart AI Agent**: LangGraph-based, memory-persistent, tool-driven agent
+- **WebDriverIO integration**: Modern browser automation, cross-browser support
+- **Intelligent tools**: Navigation, click, fill, verify, wait, screenshot, and more
+- **Cost tracking**: Real-time OpenAI usage and cost monitoring
+- **Beautiful reporting**: HTML and Allure support
+- **Backward compatible**: Old static test formats still work
+
+---
+
+## 🚀 Quick Start
+
+### 1. Install Dependencies
 ```bash
-# Install latest version
-npm install -g testgenius-ai
-
-# Or explicitly install latest
-npm install -g testgenius-ai@latest
-
-# Check current version
-testgenius --version
-
-# Update to latest version
-npm update -g testgenius-ai
+npm install
 ```
 
-### 2️⃣ **Initialize**
-```bash
-testgenius init
-```
-*Creates everything you need automatically!*
+### 2. Set Up Environment Variables
+**⚠️ IMPORTANT: OpenAI API Key Required**
 
-### 3️⃣ **Start Testing**
+Create a `.env` file in the project root:
 ```bash
-testgenius record    # Record a new test
-testgenius run       # Run all tests
-testgenius report    # View results
+cp env.example .env
+```
+
+Edit `.env` and add your OpenAI API key:
+```bash
+# Required: Your OpenAI API key for AI-powered test execution
+OPENAI_API_KEY=your_actual_openai_api_key_here
+```
+
+**Alternative**: Set as environment variable:
+```bash
+export OPENAI_API_KEY=your_actual_openai_api_key_here
+```
+
+### 3. Run the Demo
+```bash
+node tests/smart-ai-demo.js
 ```
 
 ---
 
-## 📦 Version Management
+## 📝 Writing Smart AI Tests
 
-### 🔄 **Always Get the Latest Version**
-TestGenius AI automatically provides the latest version when you install:
+### Async, Dynamic Test Format
 
-```bash
-# Install latest version (recommended)
-npm install -g testgenius-ai
-
-# Explicitly install latest
-npm install -g testgenius-ai@latest
-
-# Update existing installation
-npm update -g testgenius-ai
-```
-
-### 📋 **Check Your Version**
-```bash
-# Check current version
-testgenius --version
-
-# Check version and look for updates
-testgenius version
-```
-
-### 🎯 **Version Features**
-- **Automatic Updates**: npm always installs the latest version by default
-- **Version Checking**: Built-in command to check for updates
-- **Backward Compatibility**: New versions maintain compatibility with existing tests
-- **Release Notes**: Check [GitHub releases](https://github.com/hiroksarker/testgenius-ai/releases) for detailed changes
-
----
-
-## 📝 Writing Tests (Super Simple!)
-
-### 🎯 **Test File Structure**
-Create files in `tests/` directory:
-
-```javascript
-// tests/login-tests.js
-module.exports = [
-  {
-    id: "LOGIN-001",
-    name: "Successful Login Test",
-    description: "Test login with valid credentials",
-    priority: "High",
-    tags: ["authentication", "login", "smoke"],
-    site: "https://example.com/login",
-    testData: {
-      username: "testuser@example.com",
-      password: "securepassword123"
-    },
-    task: "Navigate to login page, enter credentials, click login, verify dashboard access"
-  },
-  {
-    id: "LOGIN-002", 
-    name: "Failed Login Test",
-    description: "Test login with invalid credentials",
-    priority: "Medium",
-    tags: ["authentication", "login", "validation"],
-    site: "https://example.com/login",
-    testData: {
-      username: "invalid@example.com",
-      password: "wrongpassword"
-    },
-    task: "Navigate to login page, enter invalid credentials, verify error message appears"
-  }
-];
-```
-
-### 🎬 **Interactive Test Recording**
-Don't want to write tests manually? Use the recorder!
-
-```bash
-testgenius record
-```
-
-Follow the prompts and TestGenius will create your test automatically!
-
----
-
-## 🛠️ Essential Commands
-
-| Command | What It Does | Example |
-|---------|-------------|---------|
-| `testgenius init` | 🚀 Setup your project | `testgenius init` |
-| `testgenius record` | 🎬 Record a new test | `testgenius record` |
-| `testgenius list` | 📋 Show all tests | `testgenius list` |
-| `testgenius run` | 🚀 Run all tests | `testgenius run` |
-| `testgenius run <id>` | 🎯 Run specific test | `testgenius run LOGIN-001` |
-| `testgenius report` | 📊 View results | `testgenius report` |
-
----
-
-## 🎯 Advanced Run Options
-
-### 📁 **File-Based Execution**
-Run tests from specific files or multiple files:
-
-```bash
-# Run tests from a single file
-testgenius run -f tests/auth-tests.js
-
-# Run tests from multiple files
-testgenius run --files tests/auth-tests.js tests/ui-tests.js
-
-# Exclude specific files
-testgenius run --exclude auth-tests.js
-```
-
-### 🎯 **Test ID Filtering**
-Run specific tests by their IDs:
-
-```bash
-# Run a single test by ID
-testgenius run LOGIN-001
-
-# Run multiple specific tests
-testgenius run --testIds LOGIN-001 LOGIN-002 AUTH-001
-```
-
-### 🏷️ **Tag and Priority Filtering**
-Filter tests by tags or priority levels:
-
-```bash
-# Run tests with specific tag
-testgenius run --tag smoke
-
-# Run high priority tests only
-testgenius run --priority High
-
-# Run medium priority tests with specific tag
-testgenius run --priority Medium --tag regression
-```
-
-### 🌐 **Browser and Mode Options**
-Customize browser and execution mode:
-
-```bash
-# Run in headless mode
-testgenius run --headless
-
-# Use specific browser
-testgenius run --browser firefox
-
-# Combine options
-testgenius run --headless --browser chrome --tag smoke
-```
-
-### 📂 **Custom Test Directory**
-Load tests from a custom directory:
-
-```bash
-# Use custom tests directory
-testgenius run --testsDir src/tests
-
-# Combine with file filtering
-testgenius run --testsDir src/tests -f src/tests/auth.js
-```
-
----
-
-## 🎨 Test Examples
-
-### 🔐 **Authentication Tests**
-```javascript
-// tests/auth-tests.js
-module.exports = [
-  {
-    id: "AUTH-001",
-    name: "User Registration",
-    priority: "High",
-    tags: ["registration", "signup"],
-    site: "https://myapp.com/register",
-    testData: {
-      email: "newuser@example.com",
-      password: "SecurePass123!",
-      confirmPassword: "SecurePass123!"
-    },
-    task: "Fill registration form, submit, verify welcome message"
-  }
-];
-```
-
-### 🛒 **E-commerce Tests**
-```javascript
-// tests/ecommerce-tests.js
-module.exports = [
-  {
-    id: "ECOMM-001",
-    name: "Add to Cart",
-    priority: "High", 
-    tags: ["cart", "purchase"],
-    site: "https://shop.example.com",
-    testData: {
-      productName: "Test Product",
-      quantity: "2"
-    },
-    task: "Search for product, add to cart, verify cart count increases"
-  }
-];
-```
-
-### 📱 **Mobile/Responsive Tests**
-```javascript
-// tests/mobile-tests.js
-module.exports = [
-  {
-    id: "MOBILE-001",
-    name: "Mobile Menu Navigation",
-    priority: "Medium",
-    tags: ["mobile", "responsive"],
-    site: "https://example.com",
-    testData: {},
-    task: "Open mobile menu, navigate through items, verify smooth transitions"
-  }
-];
-```
-
----
-
-## 🎯 Advanced Features
-
-### 🤖 **AI-Powered Test Execution**
-- **Smart element detection**
-- **Automatic retry logic**
-- **Intelligent error handling**
-- **Context-aware actions**
-
-### 📊 **Beautiful Reporting**
-- **HTML reports with screenshots**
-- **Test execution timeline**
-- **Pass/fail statistics**
-- **Performance metrics**
-
-### 🏆 **Allure Reporting (Optional)**
-TestGenius AI supports [Allure](https://docs.qameta.io/allure/) for advanced, interactive test reports.
-
-**Enable Allure in your config:**
 ```js
-// testgenius.config.js
+// tests/smart-login-test.js
 module.exports = {
-  browser: 'chrome',           // chrome, firefox, safari, edge
-  headless: false,             // true for CI/CD
-  timeout: 30000,              // 30 seconds
-  screenshotOnFailure: true,   // Auto-screenshots
-  reportPath: './reports',     // Custom report location
-  logLevel: 'info',            // debug, info, warn, error
-  reporting: {
-    outputDir: 'reports',
-    allure: {
-      enabled: true, // Enable Allure reporting
-      resultsDir: 'allure-results',
-      reportDir: 'allure-report',
-      attachments: true
-    }
-  }
+  name: 'Smart Login Test',
+  site: 'https://the-internet.herokuapp.com/login',
+
+  setup: async () => ({
+    env: 'production',
+    timestamp: new Date().toISOString()
+  }),
+
+  data: async () => ({
+    username: 'tomsmith',
+    password: 'SuperSecretPassword!',
+    expectedTitle: 'The Internet'
+  }),
+
+  task: async (data, setup) =>
+    `Login to the application using username "${data.username}" and password "${data.password}", then verify the page title contains "${data.expectedTitle}"`
 };
 ```
 
-**Or use the CLI flag for one-off runs:**
-```bash
-testgenius run --allure
-```
+### Static (Legacy) Format
 
-**View Allure reports:**
-```bash
-# Open Allure report in browser
-testgenius report --allure
-
-# Serve Allure report on a custom port
-testgenius report --allure --serve 8080
-```
-
-> ℹ️ Allure is optional. If not enabled, TestGenius will generate simple HTML reports by default.
-
-### 💰 **Cost Tracking & Optimization (New!)**
-Monitor and optimize your AI testing costs with built-in cost tracking features.
-
-**Enable cost tracking:**
-```bash
-# Enable cost tracking
-testgenius cost --enable
-
-# Set budget limits
-testgenius cost --budget 10.0
-testgenius cost --monthly-budget 100.0
-```
-
-**View cost analysis:**
-```bash
-# Generate cost report
-testgenius report --cost
-
-# Get optimization recommendations
-testgenius report --optimization
-
-# Analyze current costs
-testgenius cost --analyze
-```
-
-**Features:**
-- 📊 **Real-time cost tracking** for OpenAI API usage
-- 💡 **Cost optimization recommendations** 
-- 🚨 **Budget alerts** and limits
-- 📈 **Cost trends** and historical data
-- 🎯 **Allure integration** with cost widgets
-
-> 📖 See [Cost Tracking Guide](COST_TRACKING_GUIDE.md) for detailed usage instructions.
-
-### 🔧 **Flexible Configuration**
-```javascript
-// testgenius.config.js
+```js
 module.exports = {
-  browser: 'chrome',           // chrome, firefox, safari, edge
-  headless: false,             // true for CI/CD
-  timeout: 30000,              // 30 seconds
-  screenshotOnFailure: true,   // Auto-screenshots
-  reportPath: './reports',     // Custom report location
-  logLevel: 'info'             // debug, info, warn, error
+  name: 'Simple Login Test',
+  site: 'https://the-internet.herokuapp.com/login',
+  task: 'Navigate to login page, enter credentials, click login, verify dashboard access'
 };
 ```
 
 ---
 
-## 🚨 Troubleshooting
+## 🤖 Example: Smart AI Demo
 
-### ❌ **"Command not found: testgenius"**
-**Solution:** Add npm global bin to your PATH
+```js
+const { TestRunner } = require('./dist/framework/core/TestRunner');
+const { AITestExecutor } = require('./dist/framework/core/AITestExecutor');
 
-**For macOS/Linux:**
-```bash
-# Find your npm global path
-npm bin -g
-
-# Add to your shell config (~/.zshrc or ~/.bashrc)
-export PATH="$PATH:$(npm bin -g)"
-
-# Reload shell
-source ~/.zshrc  # or source ~/.bashrc
-```
-
-**For Windows:**
-```cmd
-# Add to PATH environment variable
-%APPDATA%\npm
-```
-
-### ❌ **"Test not found"**
-**Check:**
-- ✅ Test file is in `tests/` directory
-- ✅ Export format is correct: `module.exports = [ {...} ]`
-- ✅ Test ID is unique
-- ✅ Run `testgenius list` to see all available tests
-
-### ❌ **"Wrong export format"**
-**❌ Wrong:**
-```javascript
-module.exports = {
-  TEST_1: { id: "TEST-1", ... },
-  TEST_2: { id: "TEST-2", ... }
+const smartAITest = {
+  name: 'Smart AI Demo Test',
+  site: 'https://the-internet.herokuapp.com/login',
+  setup: async () => ({ env: 'production' }),
+  data: async () => ({ username: 'tomsmith', password: 'SuperSecretPassword!', expectedTitle: 'The Internet' }),
+  task: async (data) => `Login to the application using username "${data.username}" and password "${data.password}", then verify the page title contains "${data.expectedTitle}"`
 };
-```
 
-**✅ Correct:**
-```javascript
-module.exports = [
-  { id: "TEST-1", ... },
-  { id: "TEST-2", ... }
-];
+async function runSmartAIDemo() {
+  const testRunner = new TestRunner();
+  await testRunner.autoSetup();
+  const result = await testRunner.runAutoTest(smartAITest);
+  console.log(result);
+}
+
+if (require.main === module) runSmartAIDemo();
 ```
 
 ---
 
-## 🎉 Success Stories
+## 🛠️ Smart AI Tools
+
+- **Navigation**: `smart_navigate`
+- **Click**: `smart_click`
+- **Fill**: `smart_fill`
+- **Verify**: `smart_verify`
+- **Wait**: `smart_wait`
+- **Screenshot**: `smart_screenshot`
+- **Get Content**: `smart_get_content`
+
+All tools use schema validation and multiple detection strategies (CSS, XPath, text, etc).
 
 ---
 
-## 🤝 Contributing
+## 🧠 How It Works
 
-We love contributions! Here's how you can help:
+- **Test case** → Async functions for setup, data, and task
+- **Smart AI Agent**:
+  - Receives the task as natural language
+  - Dynamically generates an execution plan
+  - Selects and invokes tools (navigation, click, fill, etc)
+  - Handles errors, retries, and context
+  - Tracks cost and statistics
+- **No static parsing**: Every run is fully dynamic and AI-driven
 
-1. **🐛 Report bugs** - [Create an issue](https://github.com/hiroksarker/testgenius-ai/issues)
-2. **💡 Suggest features** - [Start a discussion](https://github.com/hiroksarker/testgenius-ai/discussions)
-3. **📝 Improve docs** - Submit a pull request
-4. **⭐ Star the repo** - Show your support!
+---
+
+## 🖥️ CLI Commands
+
+| Command | Description |
+|---------|-------------|
+| `node tests/smart-ai-demo.js` | Run the Smart AI demo test |
+| `testgenius run` | Run all tests (if using CLI wrapper) |
+| `testgenius list` | List all available tests |
+| `testgenius report` | View test reports |
+
+---
+
+## 📊 Reporting & Cost Tracking
+
+- **HTML and Allure reports** (with screenshots, step logs, and stats)
+- **Real-time OpenAI token/cost tracking**
+- **Execution statistics**: Success rate, tool usage, average response time
+
+---
+
+## 🧩 Configuration
+
+### Environment Setup
+The framework uses environment variables for configuration. Copy `env.example` to `.env` and customize:
+
+```bash
+cp env.example .env
+```
+
+**Required Variables:**
+- `OPENAI_API_KEY` - Your OpenAI API key (required for AI functionality)
+
+**Optional Variables:**
+- `DEFAULT_BROWSER` - Browser to use (chrome, firefox, edge)
+- `DEFAULT_HEADLESS` - Run in headless mode (true/false)
+- `DEFAULT_TIMEOUT` - Test operation timeout (milliseconds)
+- `AI_MODEL` - OpenAI model to use (default: gpt-4o)
+
+### Framework Configuration
+Edit `testgenius.config.js` for browser, headless mode, timeouts, reporting, and more.
+
+---
+
+## 🆘 Troubleshooting
+
+### Common Issues
+
+**❌ "OpenAI API key not found"**
+- Ensure `.env` file exists with `OPENAI_API_KEY=your_key_here`
+- Or set environment variable: `export OPENAI_API_KEY=your_key_here`
+- Get your API key from [OpenAI Platform](https://platform.openai.com/api-keys)
+
+**❌ "WebDriverIO not found"**
+```bash
+npm install webdriverio
+```
+
+**❌ "Browser not launching"**
+- Check browser installation (Chrome, Firefox, Edge)
+- Verify WebDriverIO configuration in `testgenius.config.js`
+
+**❌ "Tests failing with element not found"**
+- Check if test site is accessible
+- Verify element selectors in test cases
+- Review browser console for JavaScript errors
+
+### Getting Help
+- See [WIKI_HOME.md](WIKI_HOME.md) for detailed documentation
+- Check the project wiki for advanced guides
 
 ---
 
 ## 📚 Resources
 
-- 📖 **[Wiki](https://github.com/hiroksarker/testgenius-ai/wiki)** - Detailed guides and examples
-- 🎥 **[Video Tutorials](https://github.com/hiroksarker/testgenius-ai/wiki/Tutorials)** - Step-by-step videos
-- 💬 **[Community](https://github.com/hiroksarker/testgenius-ai/discussions)** - Ask questions and share tips
-- 🐛 **[Issues](https://github.com/hiroksarker/testgenius-ai/issues)** - Report bugs and request features
+- [WIKI_HOME.md](WIKI_HOME.md) — Full documentation and advanced guides
+- [Smart AI Demo Test](tests/smart-ai-demo.js) — Example test file
 
 ---
 
-## 📄 License
+## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT
 
 ---
 
-## ⚡ Powered By
-
-<div align="center">
-
-**Developed by [Hirok Sarker](https://github.com/hiroksarker) with ❤️ for QA Engineers Worldwide**
-
-[![GitHub stars](https://img.shields.io/github/stars/hiroksarker/testgenius-ai?style=social)](https://github.com/hiroksarker/testgenius-ai)
-[![GitHub forks](https://img.shields.io/github/forks/hiroksarker/testgenius-ai?style=social)](https://github.com/hiroksarker/testgenius-ai)
-[![GitHub issues](https://img.shields.io/github/issues/hiroksarker/testgenius-ai)](https://github.com/hiroksarker/testgenius-ai/issues)
-
-**Ready to revolutionize your testing?**  
-[Get Started Now →](https://www.npmjs.com/package/testgenius-ai)
-
-</div>
+**Ready to revolutionize your testing? Try Smart AI Testing Framework today!**

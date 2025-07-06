@@ -3,6 +3,7 @@ import fs from "fs-extra";
 import path from "path";
 import chalk from "chalk";
 import { AITestExecutor } from "./AITestExecutor";
+import { DynamicAITestExecutor } from "./DynamicAITestExecutor";
 import { TestSessionManager } from "./TestSessionManager";
 import { ConfigManager } from "./ConfigManager";
 import { Logger, LogLevel, LogConfig } from "./Logger";
@@ -21,7 +22,7 @@ import { CleanupManager } from "./CleanupManager";
 export class TestRunner {
   private configManager: ConfigManager;
   private sessionManager: TestSessionManager;
-  private aiExecutor!: AITestExecutor;
+  private aiExecutor!: AITestExecutor | DynamicAITestExecutor;
   private reportGenerator: ReportGenerator;
   private cleanupManager: CleanupManager;
   private allureReporter: AllureReporter | null = null;
@@ -188,11 +189,12 @@ export class TestRunner {
       await this.initializeBrowser(options, runConfig);
 
       // Initialize AI executor with config and set browser
-      this.aiExecutor = new AITestExecutor(runConfig);
+      // Use Dynamic AI Test Executor for 100% AI-driven execution
+      this.aiExecutor = new DynamicAITestExecutor(runConfig);
       if (this.browser) {
         this.aiExecutor.setBrowser(this.browser);
         console.log(
-          chalk.green("✅ Browser set on AI executor before running tests.")
+          chalk.green("✅ Browser set on Dynamic AI executor before running tests.")
         );
       } else {
         throw new Error("Browser not initialized");
@@ -387,8 +389,21 @@ export class TestRunner {
         );
         return testDefinitions;
       } else if (testDefinitions && typeof testDefinitions === "object") {
-        this.logger.debug(`✅ Loaded 1 test from ${filePath}`);
-        return [testDefinitions];
+        // Handle both single test objects and modules with multiple exports
+        if (testDefinitions.id) {
+          this.logger.debug(`✅ Loaded 1 test from ${filePath}`);
+          return [testDefinitions];
+        } else {
+          // Handle modules with multiple exports (like exports.TEST1, exports.TEST2)
+          const exportedTests = Object.values(testDefinitions).filter(
+            (test: any) => test && typeof test === 'object' && test.id
+          ) as TestDefinition[];
+          
+          this.logger.debug(
+            `✅ Loaded ${exportedTests.length} tests from ${filePath}`
+          );
+          return exportedTests;
+        }
       } else {
         this.logger.warn(`⚠️  No valid test definitions found in ${filePath}`);
         return [];

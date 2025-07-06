@@ -13,6 +13,22 @@ export interface TestDefinition {
   tags: string[];
   site: string;
   testData?: TestData;
+  task: string | (() => Promise<string>) | ((data?: any, setupData?: any) => Promise<string>);
+  steps?: TestStep[];
+  // New async properties for enhanced test cases
+  data?: () => Promise<TestData>;
+  setup?: () => Promise<TestData>;
+}
+
+// Legacy TestDefinition for backward compatibility
+export interface LegacyTestDefinition {
+  id: string;
+  name: string;
+  description: string;
+  priority: 'High' | 'Medium' | 'Low';
+  tags: string[];
+  site: string;
+  testData?: TestData;
   task: string;
   steps?: TestStep[];
 }

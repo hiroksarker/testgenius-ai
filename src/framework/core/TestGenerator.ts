@@ -142,6 +142,8 @@ Return as JSON array with this structure:
 module.exports = [\n`;
 
     tests.forEach((test, index) => {
+      const taskContent = typeof test.task === 'string' ? `'${test.task}'` : 'async () => { /* Task function */ }';
+      
       content += `  // Test ${index + 1}: ${test.name}
   {
     id: '${test.id}',
@@ -150,7 +152,7 @@ module.exports = [\n`;
     priority: '${test.priority}',
     tags: ${JSON.stringify(test.tags)},
     site: '${test.site}',
-    task: '${test.task}',
+    task: ${taskContent},
     testData: ${JSON.stringify(test.testData || {}, null, 4)},
     steps: ${JSON.stringify(test.steps || [], null, 4)}
   }${index < tests.length - 1 ? ',' : ''}\n`;
@@ -168,9 +170,11 @@ module.exports = [\n`;
 # Generated on: ${new Date().toISOString()}\n\n`;
 
     tests.forEach((test, index) => {
+      const taskDescription = typeof test.task === 'string' ? test.task : 'execute test scenario';
+      
       content += `Feature: ${test.name}
   As a user
-  I want to ${test.task.toLowerCase()}
+  I want to ${taskDescription.toLowerCase()}
   So that I can achieve my goal
 
   Scenario: ${test.description}
@@ -201,7 +205,10 @@ module.exports = [\n`;
       site: test.site || baseUrl,
       task: test.task || 'Execute test scenario',
       testData: test.testData || {},
-      steps: Array.isArray(test.steps) ? test.steps : []
+      steps: Array.isArray(test.steps) ? test.steps : [],
+      // Support new async properties
+      data: test.data,
+      setup: test.setup
     };
   }
 

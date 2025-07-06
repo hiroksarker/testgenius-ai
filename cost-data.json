@@ -9803,5 +9803,803 @@
     },
     "executionTime": 7088,
     "success": false
+  },
+  {
+    "testId": "BASIC-001",
+    "sessionId": "session-1751769142553-aisbalsbt",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T02:32:45.504Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 22950,
+    "success": false
+  },
+  {
+    "testId": "SMART-001",
+    "sessionId": "session-1751769173508-vxn73e65n",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T02:33:13.118Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 19608,
+    "success": true
+  },
+  {
+    "testId": "AUTH-001",
+    "sessionId": "session-1751769679289-ealdyomw8",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T02:41:30.660Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 11370,
+    "success": true
+  },
+  {
+    "testId": "LOGIN-001",
+    "sessionId": "session-1751770328893-x4xslympy",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T02:52:29.513Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 20619,
+    "success": true
+  },
+  {
+    "testId": "INTERNET-001",
+    "sessionId": "session-1751770414213-7d7dlc7iu",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T02:53:45.859Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 11646,
+    "success": true
+  },
+  {
+    "testId": "INTERNET-002",
+    "sessionId": "session-1751770425869-7tipj5q4v",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T02:53:57.466Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 11597,
+    "success": false
+  },
+  {
+    "testId": "INTERNET-003",
+    "sessionId": "session-1751770437470-ew2nvmtt0",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T02:54:02.165Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 4694,
+    "success": false
+  },
+  {
+    "testId": "INTERNET-004",
+    "sessionId": "session-1751770442169-oc75idv0q",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T02:54:06.349Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 4179,
+    "success": false
+  },
+  {
+    "testId": "INTERNET-005",
+    "sessionId": "session-1751770446353-y1aeokva6",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T02:54:11.761Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 5407,
+    "success": false
+  },
+  {
+    "testId": "INTERNET-001",
+    "sessionId": "session-1751770492278-ydt7rgqrr",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T02:55:03.322Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 11043,
+    "success": true
+  },
+  {
+    "testId": "INTERNET-002",
+    "sessionId": "session-1751770503334-8yj83clxc",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T02:55:14.540Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 11206,
+    "success": false
+  },
+  {
+    "testId": "INTERNET-003",
+    "sessionId": "session-1751770514546-dct4hrkpx",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T02:55:18.373Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 3826,
+    "success": false
+  },
+  {
+    "testId": "INTERNET-004",
+    "sessionId": "session-1751770518378-1vawqo1nc",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T02:55:22.133Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 3755,
+    "success": false
+  },
+  {
+    "testId": "INTERNET-005",
+    "sessionId": "session-1751770522138-5d5uj3sfo",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T02:55:28.314Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 6176,
+    "success": false
+  },
+  {
+    "testId": "INTERNET-001",
+    "sessionId": "session-1751770840305-2gktl5hw7",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T03:00:52.813Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 12507,
+    "success": true
+  },
+  {
+    "testId": "INTERNET-002",
+    "sessionId": "session-1751770852838-26ejswr1s",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T03:01:01.896Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 9057,
+    "success": false
+  },
+  {
+    "testId": "INTERNET-003",
+    "sessionId": "session-1751770861902-gvl0k2dz7",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T03:01:09.881Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 7979,
+    "success": false
+  },
+  {
+    "testId": "INTERNET-004",
+    "sessionId": "session-1751770869886-3nm15tce5",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T03:01:18.616Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 8730,
+    "success": false
+  },
+  {
+    "testId": "INTERNET-005",
+    "sessionId": "session-1751770878621-yssbv1ve1",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T03:01:26.062Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 7440,
+    "success": false
+  },
+  {
+    "testId": "INTERNET-001",
+    "sessionId": "session-1751770930859-61ff1tz9n",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T03:02:21.798Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 10938,
+    "success": true
+  },
+  {
+    "testId": "INTERNET-002",
+    "sessionId": "session-1751770941809-t3zxrmscu",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T03:02:29.447Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 7637,
+    "success": false
+  },
+  {
+    "testId": "INTERNET-003",
+    "sessionId": "session-1751770949453-i2h2x2lqt",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T03:02:37.080Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 7626,
+    "success": false
+  },
+  {
+    "testId": "INTERNET-004",
+    "sessionId": "session-1751770957085-uyd3dyshh",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T03:02:45.581Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 8495,
+    "success": false
+  },
+  {
+    "testId": "INTERNET-005",
+    "sessionId": "session-1751770965587-dcxbuazlj",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T03:02:52.992Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 7405,
+    "success": false
+  },
+  {
+    "testId": "INTERNET-001",
+    "sessionId": "session-1751771534951-pxf1wwa26",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T03:12:25.993Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 11041,
+    "success": true
+  },
+  {
+    "testId": "INTERNET-002",
+    "sessionId": "session-1751771546014-j7tpw5nq6",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T03:12:34.286Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 8271,
+    "success": false
+  },
+  {
+    "testId": "INTERNET-003",
+    "sessionId": "session-1751771554291-wdp0xg4dh",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T03:12:42.357Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 8066,
+    "success": false
+  },
+  {
+    "testId": "INTERNET-004",
+    "sessionId": "session-1751771562363-m1h7ajthd",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T03:12:50.689Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 8325,
+    "success": false
+  },
+  {
+    "testId": "INTERNET-005",
+    "sessionId": "session-1751771570695-lvhs14ih5",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T03:12:57.603Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 6907,
+    "success": false
+  },
+  {
+    "testId": "INTERNET-001",
+    "sessionId": "session-1751773212947-bi7y97prd",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T03:40:50.265Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 37317,
+    "success": false
+  },
+  {
+    "testId": "INTERNET-002",
+    "sessionId": "session-1751773250274-goedxh7mq",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T03:41:19.058Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 28783,
+    "success": false
+  },
+  {
+    "testId": "INTERNET-003",
+    "sessionId": "session-1751773279065-y94mffejo",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T03:41:35.912Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 16847,
+    "success": false
+  },
+  {
+    "testId": "INTERNET-004",
+    "sessionId": "session-1751773295918-3c5p47bw2",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T03:41:54.355Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 18437,
+    "success": false
+  },
+  {
+    "testId": "INTERNET-005",
+    "sessionId": "session-1751773314363-rv7q3dwn3",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T03:42:02.255Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 7891,
+    "success": true
+  },
+  {
+    "testId": "INTERNET-001",
+    "sessionId": "session-1751773759161-f1t6c9e03",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T03:49:30.915Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 11753,
+    "success": true
+  },
+  {
+    "testId": "INTERNET-001",
+    "sessionId": "session-1751774476423-vccmbf1qh",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "unknown",
+        "timestamp": "2025-07-06T04:01:23.064Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 6640,
+    "success": true
+  },
+  {
+    "testId": "INTERNET-001",
+    "sessionId": "dynamic-session-1751774859827",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "gpt-4o",
+        "timestamp": "2025-07-06T04:07:40.962Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 6841,
+    "success": true
+  },
+  {
+    "testId": "INTERNET-001",
+    "sessionId": "session-1751774854120-op6c16ulj",
+    "costMetrics": {
+      "tokenUsage": {
+        "promptTokens": 0,
+        "completionTokens": 0,
+        "totalTokens": 0,
+        "model": "gpt-4o",
+        "timestamp": "2025-07-06T04:07:40.969Z"
+      },
+      "estimatedCost": 0,
+      "costCurrency": "USD",
+      "modelPricing": {
+        "inputCostPer1k": 0,
+        "outputCostPer1k": 0
+      }
+    },
+    "executionTime": 6848,
+    "success": true
   }
 ]

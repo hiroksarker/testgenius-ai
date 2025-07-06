@@ -158,7 +158,10 @@ module.exports = {
         ...test.testData,
         screenshotPath: screenshotPath
       },
-      steps: Array.isArray(test.steps) ? test.steps : []
+      steps: Array.isArray(test.steps) ? test.steps : [],
+      // Support new async properties
+      data: test.data,
+      setup: test.setup
     };
   }
 
