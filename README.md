@@ -30,12 +30,26 @@ A next-generation, AI-driven end-to-end testing framework that uses OpenAI and W
 
 ## 🚀 Quick Start
 
-### 1. Install Dependencies
+### Option 1: Install from NPM (Recommended)
 ```bash
+# Install globally for CLI access
+npm install -g testgenius-ai
+
+# Or install locally in your project
+npm install testgenius-ai
+```
+
+### Option 2: Clone and Install Locally
+```bash
+# Clone the repository
+git clone https://github.com/hiroksarker/testgenius-ai.git
+cd testgenius-ai
+
+# Install dependencies
 npm install
 ```
 
-### 2. Set Up Environment Variables
+### Set Up Environment Variables
 **⚠️ IMPORTANT: OpenAI API Key Required**
 
 Create a `.env` file in the project root:
@@ -54,9 +68,27 @@ OPENAI_API_KEY=your_actual_openai_api_key_here
 export OPENAI_API_KEY=your_actual_openai_api_key_here
 ```
 
-### 3. Run the Demo
+### Run Tests
+
+**If installed globally:**
 ```bash
+# Run demo test
+testgenius run tests/smart-ai-demo.js
+
+# List all tests
+testgenius list
+
+# Run all tests
+testgenius run
+```
+
+**If installed locally or cloned:**
+```bash
+# Run demo test
 node tests/smart-ai-demo.js
+
+# Or use npm script
+npm start
 ```
 
 ---
@@ -154,12 +186,119 @@ All tools use schema validation and multiple detection strategies (CSS, XPath, t
 
 ## 🖥️ CLI Commands
 
-| Command | Description |
-|---------|-------------|
-| `node tests/smart-ai-demo.js` | Run the Smart AI demo test |
-| `testgenius run` | Run all tests (if using CLI wrapper) |
-| `testgenius list` | List all available tests |
-| `testgenius report` | View test reports |
+### Global Installation (Recommended)
+```bash
+# Install globally
+npm install -g testgenius-ai
+
+# Available commands
+testgenius --help                    # Show all available commands
+testgenius run                       # Run all tests in the project
+testgenius run <test-file>           # Run a specific test file
+testgenius list                      # List all available test files
+testgenius report                    # Generate and open test reports
+testgenius setup                     # Interactive setup wizard
+```
+
+### Local Installation
+```bash
+# Install locally
+npm install testgenius-ai
+
+# Use with npx
+npx testgenius run
+npx testgenius list
+npx testgenius report
+```
+
+### Direct Node Usage
+```bash
+# Run specific test file
+node tests/smart-ai-demo.js
+
+# Use npm scripts
+npm start                           # Run default test
+npm run build                       # Build TypeScript
+npm run watch                       # Watch mode for development
+```
+
+---
+
+## 📦 NPM Usage Examples
+
+### Quick Start Examples
+
+```bash
+# 1. Install and run in one go
+npm install -g testgenius-ai && testgenius setup
+
+# 2. Install locally and run with npx
+npm install testgenius-ai
+npx testgenius run tests/smart-ai-demo.js
+
+# 3. Install as dev dependency
+npm install --save-dev testgenius-ai
+```
+
+### Project Integration Examples
+
+```bash
+# Add to existing project
+npm install testgenius-ai
+
+# Add to package.json scripts
+{
+  "scripts": {
+    "test:ai": "testgenius run",
+    "test:ai:demo": "testgenius run tests/smart-ai-demo.js",
+    "test:ai:report": "testgenius report"
+  }
+}
+
+# Run via npm scripts
+npm run test:ai
+npm run test:ai:demo
+npm run test:ai:report
+```
+
+### Development Examples
+
+```bash
+# Clone and develop
+git clone https://github.com/hiroksarker/testgenius-ai.git
+cd testgenius-ai
+npm install
+npm run build
+npm start
+
+# Watch mode for development
+npm run watch
+
+# Lint code
+npm run lint
+
+# Clean build
+npm run clean && npm run build
+```
+
+### CI/CD Integration Examples
+
+```bash
+# GitHub Actions example
+- name: Install TestGenius AI
+  run: npm install -g testgenius-ai
+
+- name: Run AI Tests
+  run: |
+    export OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+    testgenius run
+
+# Docker example
+FROM node:18
+RUN npm install -g testgenius-ai
+COPY . .
+RUN testgenius run
+```
 
 ---
 
@@ -227,6 +366,8 @@ npm install webdriverio
 
 - [WIKI_HOME.md](WIKI_HOME.md) — Full documentation and advanced guides
 - [Smart AI Demo Test](tests/smart-ai-demo.js) — Example test file
+- [NPM Package](https://www.npmjs.com/package/testgenius-ai) — Install via npm
+- [GitHub Repository](https://github.com/hiroksarker/testgenius-ai) — Source code and issues
 
 ---
 
@@ -235,5 +376,14 @@ npm install webdriverio
 MIT
 
 ---
+
+## 🚀 Get Started Now
+
+```bash
+# Quick start with npm
+npm install -g testgenius-ai
+testgenius setup
+testgenius run
+```
 
 **Ready to revolutionize your testing? Try Smart AI Testing Framework today!**
